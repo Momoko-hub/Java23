@@ -1,31 +1,18 @@
 package raise.tech.student.management;
 
 import java.util.List;
-import org.apache.ibatis.annotations.Delete;
-import org.apache.ibatis.annotations.Insert;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Select;
-import org.apache.ibatis.annotations.Update;
-  import raise.tech.student.management.Student;
 
-  @Mapper
+@Mapper
 public interface StudentRepository {
 
-  List<Student> studentsList();
+    List<Student> studentsList();
 
-  @Select("SELECT * FROM student WHERE name = #{name}")
-  Student searchByName(String name);
+    @Select("SELECT * FROM students")
+    List<Student> searchStudents();
 
-  @Insert("INSERT student values(#{name},#{age})")
-  void registerStudent(String name,int age);
+    @Select("SELECT * FROM students_courses")
+    List<StudentsCourses> searchCourse();
 
-  @Update("UPDATE student SET age = #{age} WHERE name = #{name}")
-  void updateStudent(String name, int age);
-
-  @Delete("DELETE FROM student WHERE name =#{name}")
-  void deleteStudent(String name);
-
-  @Select("SELECT * FROM student")
-  Student studentsList(String name,int age);
-
-}
+  }
