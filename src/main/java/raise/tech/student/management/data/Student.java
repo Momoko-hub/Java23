@@ -1,4 +1,4 @@
-package raise.tech.student.management;
+package raise.tech.student.management.data;
 
 import lombok.Getter;
 
@@ -10,10 +10,12 @@ public class Student {
   private String fullName;
   private String furigana;
   private String nickname;
-  private String email;
+  private String emailAddress;
   private String address;
   private int age;
   private String sex;
+  private String remark;
+  private boolean isDeleted;
 
 
 }
