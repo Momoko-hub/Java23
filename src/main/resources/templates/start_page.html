@@ -1,0 +1,17 @@
+<!DOCTYPE HTML>
+<html lang="" xmlns:th="www.thymeleaf.org">
+<head>
+  <title>Hello</title>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+</head>
+<body>
+
+<h1 th:text="${message}"></h1>
+
+<p>Thymeleaf Iteration:</p>
+<ul>
+  <li th:each="item : ${items}" th:text="${item}"></li>
+</ul>
+<p th:text="'Current Year: ' + ${#dates.format(#dates.createNow(), 'yyyy')}"></p>
+</body>
+</html>

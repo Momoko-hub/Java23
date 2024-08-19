@@ -11,7 +11,7 @@ import raise.tech.student.management.domain.StudentDetail;
 @Component
 public class StudentConverter {
 
-  public List<StudentDetail> convertStudentDetaols(List<Student> students,
+  public List<StudentDetail> convertStudentDetails(List<Student> students,
       List<StudentsCourses> studentsCourses) {
     List<StudentDetail> studentDetails = new ArrayList<>();
     students.forEach(student -> {

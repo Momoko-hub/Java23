@@ -8,7 +8,6 @@ import raise.tech.student.management.data.StudentsCourses;
 
 /**
  * 受講生情報を扱うリポジトリ
- *
  * 全件検索や単質条件での検索、コース情報の検索が行えるクラスです。
  */
 @Mapper
