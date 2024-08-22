@@ -1,6 +1,7 @@
 package raise.tech.student.management.repository;
 
 import java.util.List;
+import org.apache.ibatis.annotations.Insert;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Select;
 import raise.tech.student.management.data.Student;
@@ -16,7 +17,7 @@ public interface StudentRepository {
     /**
      * 全件検索します。
      *
-     * @return 全件検索した受講生情報の一覧。
+     * * @return 全件検索した受講生情報の一覧。
      */
 
     @Select("SELECT * FROM students")
@@ -25,4 +26,5 @@ public interface StudentRepository {
     @Select("SELECT * FROM students_courses")
     List<StudentsCourses> searchCourse();
 
-  }
+}
+

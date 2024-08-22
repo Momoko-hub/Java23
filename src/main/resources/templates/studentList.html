@@ -23,7 +23,7 @@
   <tbody>
   <tr th:each="studentDetail : ${studentList}">
     <td th:text="${studentDetail.student.id}"></td>
-    <td th:text="${studentDetail.student.name}"></td>
+    <td th:text="${studentDetail.student.fullName}"></td>
     <td th:text="${studentDetail.student.furigana}"></td>
     <td th:text="${studentDetail.student.nickname}"></td>
     <td th:text="${studentDetail.student.emailAddress}"></td>
@@ -31,7 +31,6 @@
     <td th:text="${studentDetail.student.age}"></td>
     <td th:text="${studentDetail.student.sex}"></td>
     <td th:text="${studentDetail.student.remark}"></td>
-
   </tr>
   </tbody>
 </table>
