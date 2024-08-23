@@ -1,8 +1,6 @@
 package raise.tech.student.management.controller;
 
-import java.util.Arrays;
 import java.util.List;
-import javax.script.Bindings;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -10,8 +8,6 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
 import raise.tech.student.management.controller.converter.StudentConverter;
 import raise.tech.student.management.data.Student;
 import raise.tech.student.management.data.StudentsCourses;
@@ -22,8 +18,10 @@ import raise.tech.student.management.service.StudentService;
 public class StudentController {
 
 
-  private StudentService service;
-  private StudentConverter converter;
+  private final StudentService service;
+  private final StudentConverter converter;
+  private Student student;
+
 
   @Autowired
   public StudentController(StudentService service, StudentConverter converter) {
@@ -58,11 +56,9 @@ public class StudentController {
     if (result.hasErrors()){
       return "registerStudent";
     }
-    System.out.println(
-        studentDetail.getStudent().getFullName() + "さんが新規受講生として追加されました。");
+    service.saveStudent(studentDetail);
 
-    return "redirect:/studentsList";
-
+      return "redirect:/studentsList";
+    }
   }
 
-}

@@ -3,14 +3,17 @@ package raise.tech.student.management.repository;
 import java.util.List;
 import org.apache.ibatis.annotations.Insert;
 import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Options;
 import org.apache.ibatis.annotations.Select;
 import raise.tech.student.management.data.Student;
 import raise.tech.student.management.data.StudentsCourses;
+import raise.tech.student.management.domain.StudentDetail;
 
 /**
  * 受講生情報を扱うリポジトリ
  * 全件検索や単質条件での検索、コース情報の検索が行えるクラスです。
  */
+
 @Mapper
 public interface StudentRepository {
 
@@ -25,6 +28,16 @@ public interface StudentRepository {
 
     @Select("SELECT * FROM students_courses")
     List<StudentsCourses> searchCourse();
+
+    /**
+     * 新規受講生の名前を保存します。
+     * @param fullName　受講生のフルネーム
+     */
+
+    @Insert("INSERT INTO students (full_name, furigana, nickname, email_address, address, age, sex, remark, is_deleted) " +
+            "VALUES (#{fullName}, #{furigana}, #{nickname}, #{emailAddress}, #{address}, #{age}, #{sex}, #{remark}, #{isDeleted})")
+    @Options(useGeneratedKeys = true, keyProperty = "id")
+    void insertStudent(Student student);
 
 }
 

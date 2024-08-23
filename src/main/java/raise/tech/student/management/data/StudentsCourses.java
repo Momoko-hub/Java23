@@ -8,8 +8,8 @@ import lombok.Getter;
 
 public class StudentsCourses {
 
-  private String id;
-  private String studentsId;
+  private Long id;
+  private Long studentsId;
   private String courseName;
   private LocalDateTime startDate;
   private LocalDateTime endDate;
