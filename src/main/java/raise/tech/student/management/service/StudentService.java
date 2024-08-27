@@ -20,12 +20,21 @@ public class StudentService {
     this.repository = repository;
   }
 
-  public List<Student> searchStudentsList() {
+  public List<Student> searchStudent() {
     return repository.searchStudents();
   }
 
+  public StudentDetail searchStudentList(Long id) {
+    Student student = repository.searchStudent(id);
+    List<StudentsCourses> studentsCourses = repository.searchStudentCourses(student.getId());
+    StudentDetail studentDetail = new StudentDetail();
+    studentDetail.setStudent(student);
+    studentDetail.setStudentsCourses(studentsCourses);
+    return studentDetail;
+  }
+
   public List<StudentsCourses> searchCourseList() {
-    return repository.searchCourse();
+    return repository.searchStudentCoursesList();
   }
 
   @Transactional
@@ -37,9 +46,47 @@ public class StudentService {
       studentsCourses.setStartDate(LocalDateTime.now());
       studentsCourses.setEndDate(LocalDateTime.now().plusYears(1));
 
-
       repository.insertStudentsCourses(studentsCourses);
     }
   }
-}
+
+  @Transactional
+  public void updateStudent(StudentDetail studentDetail) {
+    repository.updateStudent(studentDetail.getStudent());
+    //現在のコース情報を登録
+    List<StudentsCourses> currentCourses = repository.searchStudentCourses(
+        studentDetail.getStudent()
+            .getId());
+    //新しいコース情報と比較して、更新、追加、削除を行う
+    for (StudentsCourses newCourse : studentDetail.getStudentsCourses()) {
+      boolean exists = false;
+      for (StudentsCourses currentCourse : currentCourses) {
+        if (currentCourse.getId().equals(newCourse.getId())) {
+          //既存のコースを更新
+          repository.updateStudentsCourses(newCourse);
+          exists = true;
+          break;
+        }
+      }
+      if (!exists) {
+        //新しいコースの追加
+        newCourse.setStudentsId(studentDetail.getStudent().getId());
+        newCourse.setStartDate(LocalDateTime.now());
+        newCourse.setEndDate(LocalDateTime.now().plusYears(1));
+        repository.insertStudentsCourses(newCourse);
+
+      }
+    }
+  }
+    @Transactional
+    public StudentDetail searchStudentById (Long id){
+      Student student = repository.searchStudent(id);
+      List<StudentsCourses> studentsCourses = repository.searchStudentCourses(student.getId());
+      StudentDetail studentDetail = new StudentDetail();
+      studentDetail.setStudent(student);
+      studentDetail.setStudentsCourses(studentsCourses);
+      return studentDetail;
+    }
+  }
+
 
