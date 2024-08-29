@@ -8,7 +8,7 @@
 <h1>受講生詳細</h1>
 <form th:action="@{/updateStudent/{id}(id=${studentDetail.student.id})}" th:object="${studentDetail}" method="post">
   <div>
-    <label for="id">Id：</label>
+    <label for="id">ID：</label>
     <input type="text" id="id" th:field="*{student.id}" required/>
   </div>
   <div>
@@ -41,17 +41,27 @@
     <label><input type="radio" name="sex" th:field="*{student.sex}" value="女性"  required> 女性</label>
     <label><input type="radio" name="sex" th:field="*{student.sex}" value="その他"  required> その他</label>
   </div>
+  <div>
+    <label for="remark">備考：</label>
+    <input type="text" id="remark" th:field="*{student.remark}"/>
+  </div>
   <div th:each="course, stat : *{studentsCourses}">
-    <label for="id"
+    <label for="studentsCourseId"
            th:for="studentCourse.__${stat.index}__.id">受講コースID：</label>
-    <input type="text" id="id"  th:id="studentCourse.__${stat.index}__.id"
+    <input type="text" id="studentsCourseId"  th:id="studentCourse.__${stat.index}__.id"
            th:field="*{studentsCourses[__${stat.index}__].id}" required/>
     <label for="courseName"
            th:for="studentCourse.__${stat.index}__.courseName">受講コース名：</label>
     <input type="text" id="courseName"  th:id="studentCourse.__${stat.index}__.courseName"
            th:field="*{studentsCourses[__${stat.index}__].courseName}" required/>
-
   </div>
+  <p></p>
+  <div>
+    <label for="isDeleted">キャンセル：</label>
+    <input type="checkbox" id="isDeleted" th:field="*{student.isDeleted}"/>
+  </div>
+  <p></p>
+
   <div>
     <button type="submit">更新</button>
   </div>

@@ -20,7 +20,7 @@ public class StudentService {
     this.repository = repository;
   }
 
-  public List<Student> searchStudent() {
+  public List<Student> getActiveStudents() {
     return repository.searchStudents();
   }
 
@@ -86,6 +86,11 @@ public class StudentService {
       studentDetail.setStudent(student);
       studentDetail.setStudentsCourses(studentsCourses);
       return studentDetail;
+    }
+
+    @Transactional
+  public void deleteStudent(Long id){
+    repository.logicallyDeleteStudent(id);
     }
   }
 

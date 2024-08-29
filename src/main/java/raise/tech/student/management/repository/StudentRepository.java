@@ -8,7 +8,6 @@ import org.apache.ibatis.annotations.Select;
 import org.apache.ibatis.annotations.Update;
 import raise.tech.student.management.data.Student;
 import raise.tech.student.management.data.StudentsCourses;
-import raise.tech.student.management.domain.StudentDetail;
 
 /**
  * 受講生情報を扱うリポジトリ
@@ -20,7 +19,6 @@ public interface StudentRepository {
 
     /**
      * 全件検索します。
-     *
      * * @return 全件検索した受講生情報の一覧。
      */
 
@@ -75,6 +73,9 @@ public interface StudentRepository {
 
     @Select("SELECT * FROM students_courses WHERE students_id = #{studentsId}")
     List<StudentsCourses> searchStudentCourses(Long studentId);
+
+    @Update("UPDATE students SET is_deleted = true WHERE id = #{id}")
+    void logicallyDeleteStudent(Long id);
 
 
 }

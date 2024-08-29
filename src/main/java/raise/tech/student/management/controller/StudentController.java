@@ -40,7 +40,7 @@ public class StudentController {
   //受講生一覧を表示
   @GetMapping("/studentsList")
   public String getStudentsList(Model model) {
-    List<Student> students = service.searchStudent();
+    List<Student> students = service.getActiveStudents();
     List<StudentsCourses> studentsCourses = service.searchCourseList();
 
     model.addAttribute("studentList", converter.convertStudentDetails(students, studentsCourses));
