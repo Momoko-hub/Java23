@@ -45,29 +45,14 @@ public class StudentController {
   public List<StudentDetail> getStudentsList() {
     List<Student> students = service.getActiveStudents();
     List<StudentsCourses> studentsCourses = service.searchCourseList();
-
     return converter.convertStudentDetails(students, studentsCourses);
   }
 
-
-  //新規受講生登録の画面表示
-  @GetMapping("/newStudent")
-  public String newStudent(Model model) {
-    StudentDetail studentDetail = new StudentDetail();
-    studentDetail.setStudentsCourses(Arrays.asList(new StudentsCourses()));
-    model.addAttribute("studentDetail", studentDetail);
-    return "registerStudent";
-  }
-
-
   //新規受講生の登録処理
   @PostMapping("/registerStudent")
-  public String registerStudent(@ModelAttribute StudentDetail studentDetail, BindingResult result) {
-    if (result.hasErrors()) {
-      return "registerStudent";
-    }
-    service.saveStudent(studentDetail);
-    return "redirect:/studentsList";
+  public ResponseEntity<StudentDetail> registerStudent(@RequestBody StudentDetail studentDetail) {
+    StudentDetail responseStudentDetail = service.saveStudent(studentDetail);
+    return ResponseEntity.ok(responseStudentDetail);
   }
 
   //受講生情報の更新
@@ -75,7 +60,6 @@ public class StudentController {
   public StudentDetail getStudent(@PathVariable Long id) {
     return service.searchStudentById(id);
   }
-
 
   //受講生情報の更新登録処理
   @PostMapping("/updateStudent")

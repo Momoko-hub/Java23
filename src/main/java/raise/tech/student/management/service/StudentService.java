@@ -38,7 +38,7 @@ public class StudentService {
   }
 
   @Transactional
-  public void saveStudent(StudentDetail studentDetail) {
+  public StudentDetail saveStudent(StudentDetail studentDetail) {
     repository.insertStudent(studentDetail.getStudent());
     //コース情報の登録
     for (StudentsCourses studentsCourses : studentDetail.getStudentsCourses()) {
@@ -48,6 +48,7 @@ public class StudentService {
 
       repository.insertStudentsCourses(studentsCourses);
     }
+    return studentDetail;
   }
 
   @Transactional
