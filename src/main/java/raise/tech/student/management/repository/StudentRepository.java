@@ -10,23 +10,44 @@ import raise.tech.student.management.data.Student;
 import raise.tech.student.management.data.StudentsCourses;
 
 /**
- * 受講生情報を扱うリポジトリ
- * 全件検索や単質条件での検索、コース情報の検索が行えるクラスです。
+ * 受講生テーブルと受講生コース情報テーブルとが紐づくRepositoryです。
  */
-
 @Mapper
 public interface StudentRepository {
 
     /**
-     * 全件検索します。
-     * * @return 全件検索した受講生情報の一覧。
+     * 受講生の全件検索を行います。
+     *
+     * * @return 受講生一覧（全件）
      */
-
     @Select("SELECT * FROM students")
     List<Student> searchStudents();
 
+    /**
+     * 受講生の検索を行います。
+     *
+     * @param id 学生ID
+     * @return 学生情報
+     */
+    @Select("SELECT * FROM students WHERE id = #{id}")
+    Student searchStudent(Long id);
+
+    /**
+     * 受講生のコース情報の全件検索を行います。
+     *
+     * @return 受講生のコース情報（全件）
+     */
     @Select("SELECT * FROM students_courses")
     List<StudentsCourses> searchStudentCoursesList();
+
+    /**
+     * 受講生IDに紐づく受講生コース情報を検索します。
+     *
+     * @param studentId　受講生ID
+     * @return 受講生IDに紐づく受講生コース情報
+     */
+    @Select("SELECT * FROM students_courses WHERE students_id = #{studentsId}")
+    List<StudentsCourses> searchStudentCourses(Long studentId);
 
     /**
      * 新規受講生の名前を保存します。
@@ -62,17 +83,7 @@ public interface StudentRepository {
     @Update("UPDATE students_courses SET course_name = #{courseName} WHERE id = #{id}")
     void updateStudentsCourses(StudentsCourses studentsCourses);
 
-    /**
-     * IDを基に学生情報を取得します。
-     * @param id 学生ID
-     * @return 学生情報
-     */
 
-    @Select("SELECT * FROM students WHERE id = #{id}")
-    Student searchStudent(Long id);
-
-    @Select("SELECT * FROM students_courses WHERE students_id = #{studentsId}")
-    List<StudentsCourses> searchStudentCourses(Long studentId);
 
     @Update("UPDATE students SET is_deleted = true WHERE id = #{id}")
     void logicallyDeleteStudent(Long id);
