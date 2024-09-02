@@ -8,7 +8,7 @@ import lombok.Setter;
 @Setter
 
 
-public class StudentsCourses {
+public class StudentCourse {
 
   private Long id;
   private Long studentsId;

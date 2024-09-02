@@ -7,11 +7,10 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 import raise.tech.student.management.controller.converter.StudentConverter;
-import raise.tech.student.management.data.Student;
-import raise.tech.student.management.data.StudentsCourses;
 import raise.tech.student.management.domain.StudentDetail;
 import raise.tech.student.management.repository.StudentRepository;
 import raise.tech.student.management.service.StudentService;
@@ -24,7 +23,6 @@ public class StudentController {
 
 
   private final StudentService service;
-  private final StudentConverter converter;
   private StudentRepository repository;
 
 
@@ -32,26 +30,23 @@ public class StudentController {
   public StudentController(StudentService service, StudentConverter converter,
       StudentRepository repository) {
     this.service = service;
-    this.converter = converter;
     this.repository = repository;
 
   }
 
   /**
-   * 受講生一覧検索です。
+   * 受講生詳細の一覧検索です。
    * 全件検索を行うので、条件指定は行わないものになります。
    *
-   * @return 受講生一覧（全件）
+   * @return 受講生詳細一覧（全件）
    */
   @GetMapping("/studentsList")
   public List<StudentDetail> getStudentsList() {
-    List<Student> students = service.searchStudentList();
-    List<StudentsCourses> studentsCourses = service.searchCourseList();
-    return converter.convertStudentDetails(students, studentsCourses);
+    return service.searchStudentList();
   }
 
   /**
-   * 受講生検索です。
+   * 受講生詳細の検索です。
    * IDに紐づく任意の受講生の情報を取得します。
    * @param id　受講生ID
    * @return 受講生
@@ -59,23 +54,35 @@ public class StudentController {
   //受講生情報の更新
   @GetMapping("/student/{id}")
   public StudentDetail getStudent(@PathVariable Long id) {
-    return service.searchStudentById(id);
+    return service.searchStudent(id);
   }
 
-  //新規受講生の登録処理
+
+  /**
+   *受講生詳細の登録を行います。
+   *
+   * @param studentDetail 受講生詳細
+   * @return 実行結果
+   */
   @PostMapping("/registerStudent")
   public ResponseEntity<StudentDetail> registerStudent(@RequestBody StudentDetail studentDetail) {
-    StudentDetail responseStudentDetail = service.saveStudent(studentDetail);
+    StudentDetail responseStudentDetail = service.registerStudent(studentDetail);
     return ResponseEntity.ok(responseStudentDetail);
   }
 
-
-  //受講生情報の更新登録処理
-  @PostMapping("/updateStudent")
+  /**
+   * 受講生詳細の更新を行います。キャンセルフラグの更新もここで行います。（論理削除）
+   *
+   * @param studentDetail 受講生詳細
+   * @return 実行結果
+   */
+  @PutMapping("/updateStudent")
   public ResponseEntity<String> updateStudent(@RequestBody StudentDetail studentDetail) {
     service.updateStudent(studentDetail);
     return ResponseEntity.ok("更新処理がで成功しました。");
   }
+
+
 }
 
 
