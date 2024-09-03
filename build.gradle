@@ -29,6 +29,8 @@ dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter-web'
 	//Thymeleaf
 	implementation 'org.springframework.boot:spring-boot-starter-thymeleaf'
+	//Validation
+	implementation 'org.springframework.boot:spring-boot-starter-validation'
 	//便利機能の追加、ユーティリティ
 	implementation 'org.apache.commons:commons-lang3:3.15.0'
 	//Lombok
@@ -54,3 +56,5 @@ tasks.named('test') {
 tasks.named('bootRun') {
 	mainClass.set('raise.tech.student.management.Application')
 }
+
+35-44.36

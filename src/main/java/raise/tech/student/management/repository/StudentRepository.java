@@ -20,7 +20,6 @@ public interface StudentRepository {
      *
      * * @return 受講生一覧（全件）
      */
-    @Select("SELECT * FROM students")
     List<Student> searchStudents();
 
     /**
@@ -29,15 +28,13 @@ public interface StudentRepository {
      * @param id 学生ID
      * @return 学生情報
      */
-    @Select("SELECT * FROM students WHERE id = #{id}")
-    Student searchStudent(Long id);
+    Student searchStudent(Integer id);
 
     /**
      * 受講生のコース情報の全件検索を行います。
      *
      * @return 受講生のコース情報（全件）
      */
-    @Select("SELECT * FROM students_courses")
     List<StudentCourse> searchStudentCourseList();
 
     /**
@@ -46,38 +43,27 @@ public interface StudentRepository {
      * @param studentId　受講生ID
      * @return 受講生IDに紐づく受講生コース情報
      */
-    @Select("SELECT * FROM students_courses WHERE students_id = #{studentsId}")
-    List<StudentCourse> searchStudentCourse(Long studentId);
+    List<StudentCourse> searchStudentCourse(Integer studentId);
 
     /**
-     * 受講生を新規登録します。IDに関しては自動裁判を行う。
+     * 受講生を新規登録します。IDに関しては自動採番を行う。
      *
      * @param student　受講生
      */
-    @Insert("INSERT INTO students (full_name, furigana, nickname, email_address, address, age, sex, remark, is_deleted) " +
-            "VALUES (#{fullName}, #{furigana}, #{nickname}, #{emailAddress}, #{address}, #{age}, #{sex}, #{remark}, #{isDeleted})")
-    @Options(useGeneratedKeys = true, keyProperty = "id")
-    void insertStudent(Student student);
+      void insertStudent(Student student);
 
     /**
-     * 受講生コース情報を新規登録します。IDに関しては自動裁判を行う。
+     * 受講生コース情報を新規登録します。IDに関しては自動採番を行う。
      *
      * @param studentCourse　受講生のコース情報
      */
-    @Insert("INSERT INTO students_courses (students_id, course_name, start_date, end_date)" +
-        "VALUES (#{studentsId}, #{courseName}, #{startDate}, #{endDate})")
-    @Options(useGeneratedKeys = true, keyProperty = "id")
-    void insertStudentsCourse(StudentCourse studentCourse);
-
+      void insertStudentsCourse(StudentCourse studentCourse);
 
     /**
      * 受講生を更新します。
      *
      * @param student 受講生
      */
-    @Update("UPDATE students SET full_name = #{fullName}, furigana = #{furigana}, nickname = #{nickname}, " +
-            "email_address = #{emailAddress}, address = #{address}, age = #{age}, sex = #{sex}, remark = #{remark}, " +
-            "is_deleted = #{isDeleted} WHERE id = #{id}")
     void updateStudent(Student student);
 
     /**
@@ -85,7 +71,6 @@ public interface StudentRepository {
      *
      * @param studentCourse 受講生コース情報
      */
-    @Update("UPDATE students_courses SET course_name = #{courseName} WHERE id = #{id}")
     void updateStudentCourse(StudentCourse studentCourse);
 
 
