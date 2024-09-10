@@ -12,8 +12,7 @@ import raise.tech.student.management.domain.StudentDetail;
 import raise.tech.student.management.repository.StudentRepository;
 
 /**
- * 受講生情報を取り扱うサービスです。
- * 受講生の検索や登録・更新処理を行います。
+ * 受講生情報を取り扱うサービスです。 受講生の検索や登録・更新処理を行います。
  */
 @Service
 public class StudentService {
@@ -28,8 +27,7 @@ public class StudentService {
   }
 
   /**
-   * 受講生詳細の一覧検索です。
-   * 全件検索を行うので、条件指定は行わないものになります。
+   * 受講生詳細の一覧検索です。 全件検索を行うので、条件指定は行わないものになります。
    *
    * @return 受講生詳細一覧（全件）
    */
@@ -45,15 +43,14 @@ public class StudentService {
    * @param id 受講生ID
    * @return 受講生詳細
    */
-    public StudentDetail searchStudent(Integer id){
-      Student student = repository.searchStudent(id);
-      List<StudentCourse> studentCourse = repository.searchStudentCourse(student.getId());
-      return new StudentDetail(student, studentCourse);
-    }
+  public StudentDetail searchStudent(Integer id) {
+    Student student = repository.searchStudent(id);
+    List<StudentCourse> studentCourse = repository.searchStudentCourse(student.getId());
+    return new StudentDetail(student, studentCourse);
+  }
 
   /**
-   * 受講生詳細の登録を行います。
-   * 受講生と受講生コース情報を個別に登録し、受講生コース情報には受講生情報を紐付ける値やコース開始日、コース終了日を設定します。
+   * 受講生詳細の登録を行います。 受講生と受講生コース情報を個別に登録し、受講生コース情報には受講生情報を紐付ける値やコース開始日、コース終了日を設定します。
    *
    * @param studentDetail 受講生詳細
    * @return 登録情報を付与した受講生詳細
@@ -74,7 +71,7 @@ public class StudentService {
    * 受講生コース情報を登録する際の初期情報を設定する。
    *
    * @param studentCourses 受講生コース情報
-   * @param student 受講生
+   * @param student        受講生
    */
   private void initStudentCourse(StudentCourse studentCourses, Student student) {
     LocalDateTime now = LocalDateTime.now();
@@ -94,11 +91,9 @@ public class StudentService {
     repository.updateStudent(studentDetail.getStudent());
     studentDetail.getStudentCourseList()
         .forEach(repository::updateStudentCourse);
-    }
-
-
-
-
   }
+
+
+}
 
 

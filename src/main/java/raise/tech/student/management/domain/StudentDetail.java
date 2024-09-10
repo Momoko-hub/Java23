@@ -1,5 +1,6 @@
 package raise.tech.student.management.domain;
 
+import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.Valid;
 import java.util.ArrayList;
 import java.util.List;
@@ -10,6 +11,7 @@ import lombok.Setter;
 import raise.tech.student.management.data.Student;
 import raise.tech.student.management.data.StudentCourse;
 
+@Schema(description = "受講生詳細")
 @Getter
 @Setter
 @NoArgsConstructor

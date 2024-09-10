@@ -1,16 +1,18 @@
 package raise.tech.student.management.data;
 
+import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
 import lombok.Setter;
 
+@Schema(description = "受講生")
 @Getter
 @Setter
 
 public class Student {
 
+  @Schema(description = "受講生のID（サーバーで自動採番されます。）", examples = "123456")
   private Integer id;
 
   @NotBlank
