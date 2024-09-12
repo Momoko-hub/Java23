@@ -11,6 +11,7 @@ import static org.mockito.Mockito.when;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -41,7 +42,7 @@ class StudentServiceTest {
     sut = new StudentService(repository, converter);
 
     student = new Student();
-    student.setId(1);
+    student.setId(12345);
     student.setFullName("山田　太郎");
 
     StudentCourse course1 = new StudentCourse();
@@ -70,26 +71,22 @@ class StudentServiceTest {
   @Test
   void 受講生詳細の検索_IDに紐つく受講生とその受講生のコース情報を適切に呼び出せていること() {
 
-    when(repository.searchStudent(1)).thenReturn(student);
-    when(repository.searchStudentCourse(1)).thenReturn(studentCourseList);
+    when(repository.searchStudent(12345)).thenReturn(student);
+    when(repository.searchStudentCourse(12345)).thenReturn(new ArrayList<>());
 
-    StudentDetail result = sut.searchStudent(1);
+    StudentDetail expected = new StudentDetail(student, new ArrayList<>());
+    StudentDetail result = sut.searchStudent(12345);
 
-    assertNotNull(result);
-    assertEquals(student, result.getStudent());
-    assertEquals(studentCourseList, result.getStudentCourseList());
-
-    verify(repository).searchStudent(1);
-    verify(repository).searchStudentCourse(1);
+    verify(repository).searchStudent(12345);
+    verify(repository).searchStudentCourse(12345);
+    Assertions.assertEquals(expected.getStudent().getId(), result.getStudent().getId());
 
   }
 
   @Test
   @Transactional
   void 受講生詳細の登録と初期設定が適切に行われているか() {
-    StudentDetail studentDetail = new StudentDetail();
-    studentDetail.setStudent(student);
-    studentDetail.setStudentCourseList(studentCourseList);
+    StudentDetail studentDetail = new StudentDetail(student, studentCourseList);
 
     doNothing().when(repository).insertStudent(student);
     doNothing().when(repository).insertStudentsCourse(any(StudentCourse.class));

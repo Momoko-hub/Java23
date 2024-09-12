@@ -60,9 +60,8 @@ public class StudentController {
           description = "サーバーでエラーが発生しました。")
   })
   @GetMapping("/studentsList")
-  public List<StudentDetail> getStudentsList() throws TestException {
-    throw new TestException(
-        "現在このAPIは使用できません。URLは「studentList』ではなく「students」を利用してください。");
+  public List<StudentDetail> getStudentsList() {
+    return service.searchStudentList();
   }
 
   /**

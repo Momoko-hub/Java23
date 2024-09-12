@@ -32,6 +32,7 @@ public class Student {
 
   private int age;
 
+  @NotBlank
   private String sex;
 
   private String remark;
