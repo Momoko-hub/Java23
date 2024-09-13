@@ -1,7 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<testsuite name="raise.tech.student.management.controller.converter.StudentConverterTest" tests="1" skipped="0" failures="0" errors="0" timestamp="2024-09-12T06:24:16" hostname="ootamomokonoMacBook-Air.local" time="0.007">
-  <properties/>
-  <testcase name="受講生に紐づく受講生コース情報が取得できているか()" classname="raise.tech.student.management.controller.converter.StudentConverterTest" time="0.007"/>
-  <system-out><![CDATA[]]></system-out>
-  <system-err><![CDATA[]]></system-err>
-</testsuite>
