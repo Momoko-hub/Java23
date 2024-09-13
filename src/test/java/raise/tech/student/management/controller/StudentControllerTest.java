@@ -36,10 +36,11 @@ class StudentControllerTest {
   private StudentService service;
 
   @MockBean
-  private StudentConverter converter;
+  private StudentRepository repository;
 
   @MockBean
-  private StudentRepository repository;
+  private StudentConverter converter;
+
 
   private Validator validator = Validation.buildDefaultValidatorFactory().getValidator();
 
