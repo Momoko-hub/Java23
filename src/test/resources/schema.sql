@@ -13,3 +13,13 @@ CREATE TABLE IF NOT EXISTS students
 
 );
 
+CREATE TABLE IF NOT EXISTS students_courses
+(
+ id INT PRIMARY KEY,
+ student_id INT,
+ course_name VARCHAR(100)
+ start_date DATE,
+ end_date DATE
+
+ );
+
