@@ -18,10 +18,8 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
-import raise.tech.student.management.controller.converter.StudentConverter;
 import raise.tech.student.management.domain.StudentDetail;
 import raise.tech.student.management.exception.TestException;
-import raise.tech.student.management.repository.StudentRepository;
 import raise.tech.student.management.service.StudentService;
 
 /**
@@ -31,16 +29,11 @@ import raise.tech.student.management.service.StudentService;
 @RestController
 public class StudentController {
 
-
   private final StudentService service;
-  private StudentRepository repository;
-
 
   @Autowired
-  public StudentController(StudentService service, StudentConverter converter,
-      StudentRepository repository) {
+  public StudentController(StudentService service) {
     this.service = service;
-    this.repository = repository;
 
   }
 
@@ -161,5 +154,6 @@ public class StudentController {
         "現在このAPIは使用できません。URLは「students』ではなく「studentsList」を利用してください。");
   }
 }
+
 
 
