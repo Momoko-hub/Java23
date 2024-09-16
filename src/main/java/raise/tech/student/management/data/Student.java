@@ -37,7 +37,7 @@ public class Student {
 
   private String remark;
 
-  private Boolean isDeleted = false;
+  private boolean isDeleted = false;
 
 
 }
