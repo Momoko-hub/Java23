@@ -149,7 +149,7 @@ public class StudentController {
           responseCode = "500",
           description = "サーバーでエラーが発生しました。")})
   @GetMapping("/students")
-  public List<StudentDetail> exceptionHandler() throws TestException {
+  public List<StudentDetail> getStudentDetail() throws TestException {
     throw new TestException(
         "現在このAPIは使用できません。URLは「students』ではなく「studentsList」を利用してください。");
   }
