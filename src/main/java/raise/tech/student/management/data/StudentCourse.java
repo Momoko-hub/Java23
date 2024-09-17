@@ -9,7 +9,6 @@ import lombok.Setter;
 @Schema(description = "受講生コース情報")
 @Getter
 @Setter
-
 public class StudentCourse {
 
   @Schema(description = "受講生コース情報のID（サーバーで自動採番されます。）", examples = "123456")
