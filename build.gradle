@@ -1,44 +1,63 @@
 plugins {
-	id 'java'
-	id 'war'
-	id 'org.springframework.boot' version '3.3.2'
-	id 'io.spring.dependency-management' version '1.1.6'
+    id 'java'
+    id 'war'
+    id 'org.springframework.boot' version '3.3.2'
+    id 'io.spring.dependency-management' version '1.1.6'
 }
 
 group = 'raise.tech'
 version = '0.0.1-SNAPSHOT'
 
 java {
-	toolchain {
-		languageVersion = JavaLanguageVersion.of(21)
-	}
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(21)
+    }
+}
+
+configurations {
+    compileOnly {
+        extendsFrom annotationProcessor
+    }
 }
 
 repositories {
-	mavenCentral()
+    mavenCentral()
 }
 
 dependencies {
-	implementation 'org.springframework.boot:spring-boot-starter-web'
-	//便利機能の追加、ユーティリティ
-	implementation 'org.apache.commons:commons-lang3:3.15.0'
+    //Spring Boot
+    implementation 'org.springframework.boot:spring-boot-starter-web'
+    //Thymeleaf
+    implementation 'org.springframework.boot:spring-boot-starter-thymeleaf'
+    //Validation
+    implementation 'org.springframework.boot:spring-boot-starter-validation'
 
-	//MySQLドライバ
-	runtimeOnly 'com.mysql:mysql-connector-j'
+    //OpenAPI Generator
+    implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.6.0'
 
-	//MyBatis
-	implementation 'org.mybatis.spring.boot:mybatis-spring-boot-starter:3.0.3'
+    //便利機能の追加、ユーティリティ
+    implementation 'org.apache.commons:commons-lang3:3.15.0'
 
-	providedRuntime 'org.springframework.boot:spring-boot-starter-tomcat'
-	testImplementation 'org.springframework.boot:spring-boot-starter-test'
-	testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+    //Lombok
+    compileOnly 'org.projectlombok:lombok'
+    annotationProcessor 'org.projectlombok:lombok'
+
+    //MySQLドライバ
+    runtimeOnly 'com.mysql:mysql-connector-j'
+
+    //MyBatis
+    implementation 'org.mybatis.spring.boot:mybatis-spring-boot-starter:3.0.3'
+
+    providedRuntime 'org.springframework.boot:spring-boot-starter-tomcat'
+    testImplementation 'org.springframework.boot:spring-boot-starter-test'
+    testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
 }
 
 tasks.named('test') {
-	useJUnitPlatform()
+    useJUnitPlatform()
 }
 
 // メインクラスの指定
 tasks.named('bootRun') {
-	mainClass.set('raise.tech.student.management.Application')
+    mainClass.set('raise.tech.student.management.Application')
 }
