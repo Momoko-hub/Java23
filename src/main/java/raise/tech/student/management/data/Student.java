@@ -29,7 +29,7 @@ public class Student {
   @NotBlank
   private String address;
 
-  private int age;
+  private Integer age;
 
   @NotBlank
   private String sex;

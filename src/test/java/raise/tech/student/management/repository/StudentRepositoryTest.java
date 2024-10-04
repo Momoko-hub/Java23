@@ -17,14 +17,14 @@ class StudentRepositoryTest {
 
   @Test
   void 受講生の全件検索が行われること() {
-    List<Student> actual = sut.searchStudents();
+    List<Student> actual = sut.searchAllStudents();
     assertThat(actual.size()).isEqualTo(5);
   }
 
   @Test
   void 受講生のID検索が行えること() {
     Integer id = 197555;
-    Student student = sut.searchStudent(id);
+    Student student = sut.searchStudentById(id);
     assertThat(student.getId()).isEqualTo(id);
     assertThat(student.getFullName()).isEqualTo("森田恵麻");
   }
@@ -60,7 +60,7 @@ class StudentRepositoryTest {
 
     sut.insertStudent(student);
 
-    List<Student> actual = sut.searchStudents();
+    List<Student> actual = sut.searchAllStudents();
 
     assertThat(actual.size()).isEqualTo(6);
 
@@ -83,13 +83,13 @@ class StudentRepositoryTest {
   void 受講生の更新が行えること() {
     Integer id = 197555;
 
-    Student student = sut.searchStudent(id);
+    Student student = sut.searchStudentById(id);
     sut.updateStudent(student);
 
     student.setFullName("盛田　恵麻");
 
     sut.updateStudent(student);
-    Student updatedStudent = sut.searchStudent(id);
+    Student updatedStudent = sut.searchStudentById(id);
 
     assertThat(updatedStudent.getFullName()).isEqualTo("盛田　恵麻");
 
@@ -109,7 +109,8 @@ class StudentRepositoryTest {
     List<StudentCourse> updatedStudentCourse = sut.searchStudentCourse(studentId);
 
     assertThat(updatedStudentCourse).anyMatch(course -> course.getCourseName().equals("Java"));
-
   }
+
+
 }
 
