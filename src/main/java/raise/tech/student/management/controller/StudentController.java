@@ -153,7 +153,7 @@ public class StudentController {
    * @return 受講生詳細
    */
   @Operation(summary = "申込状況による受講生検索", description = "検索した申込状況の受講生詳細情報を取得します。")
-  @GetMapping("searchByStatus")
+  @GetMapping("/searchByStatus")
   public ResponseEntity<List<StudentDetail>> searchStudentByStatus(@RequestParam String status) {
 
     Status statusEmu = Status.valueOf(status);

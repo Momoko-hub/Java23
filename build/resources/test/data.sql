@@ -1,13 +1,13 @@
-INSERT INTO students (id, full_name, furigana, nickname, email_address, address, age, sex)
-VALUES (197555, '森田恵麻', 'モリタエマ', 'Emma', 'emma@email.jp', '埼玉県大宮市', 30, '女'),
-       (272181, '高橋葵', 'タカハシアオイ', 'あお', 'aoi@email.jp', '東京都渋谷区', 22, 'その他'),
-       (402820, '鈴木秀雄', 'スズキヒデオ', 'ヒデじい', 'hideo@email.jp', '北海道札幌市', 52, '男'),
-       (885987, '田中太郎', 'タナカタロウ', 'たろ', 'taro@email.jp', '東京都中央区', 30, '男'),
-       (986028, '佐藤尚美', 'サトウ　ナオミ', 'なおちゃん', 'naomi@email.jp', '大阪府大阪市', 32, '女');
+INSERT INTO students (id, full_name, furigana, nickname, email_address, address, age, sex, is_deleted)
+VALUES (197555, '森田恵麻', 'モリタエマ', 'Emma', 'emma@email.jp', '埼玉県大宮市', 30, '女', false),
+       (272181, '高橋葵', 'タカハシアオイ', 'あお', 'aoi@email.jp', '東京都渋谷区', 22, 'その他', false),
+       (402820, '鈴木秀雄', 'スズキヒデオ', 'ヒデじい', 'hideo@email.jp', '北海道札幌市', 52, '男', false),
+       (885987, '田中太郎', 'タナカタロウ', 'たろ', 'taro@email.jp', '東京都中央区', 30, '男', false),
+       (986028, '佐藤尚美', 'サトウ　ナオミ', 'なおちゃん', 'naomi@email.jp', '大阪府大阪市', 32, '女', true);
 
 
 INSERT INTO students_courses (id, students_id, course_name, start_date, end_date)
-VALUES (996284, 197555, 'Webデザイン', '2024-09-01', '2025-09-01'),
+VALUES (996284, 197555, 'デザイン', '2024-09-01', '2025-09-01'),
        (996285, 197555, 'AWS', '2023-09-01', '2024-09-01'),
        (996286, 272181, 'デザイン', '2023-05-01', '2024-05-01'),
        (996287, 272181, 'AWS', '2024-05-01', '2025-05-01'),

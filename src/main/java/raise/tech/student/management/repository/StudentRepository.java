@@ -52,6 +52,14 @@ public interface StudentRepository {
   List<StudentCourse> searchStudentCourseList();
 
   /**
+   * 申込状況の全件検索を行います。
+   *
+   * @return 受講生の申込状況（全件）
+   */
+  List<ApplicationStatus> searchApplicationStatuses();
+
+
+  /**
    * 受講生IDに紐づく受講生コース情報を検索します。
    *
    * @param studentId 　受講生ID
@@ -127,7 +135,7 @@ public interface StudentRepository {
    * @param courseName 受講コース名
    * @return 学生情報
    */
-  List<StudentCourse> searchStudentByCourseName(String courseName);
+  List<StudentCourse> searchStudentCourseByCourseName(String courseName);
 
   /**
    * 申込状況の検索を行います。

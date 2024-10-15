@@ -38,6 +38,13 @@
     FROM students_courses
   </select>
 
+  <!-- 申込状況の全件検索 -->
+  <select id="searchApplicationStatuses"
+    resultType="raise.tech.student.management.data.ApplicationStatus">
+    SELECT *
+    FROM application_status
+  </select>
+
   <!-- 受講生IDに紐づく受講生コース情報の検索 -->
   <select id="searchStudentCourseByStudentId"
     resultType="raise.tech.student.management.data.StudentCourse">

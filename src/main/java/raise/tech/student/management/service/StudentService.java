@@ -2,6 +2,7 @@ package raise.tech.student.management.service;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -299,15 +300,19 @@ public class StudentService {
    * 受講コースの名前検索です。受講コースが一致する受講生情報を取得した後、その受講生に紐づく受講生コース情報、申込状況を取得して設定します。
    * 複数のコースを受講している場合でも検索したコースのみが表示されます。
    *
-   * @param courseName 受講生の名前
+   * @param courseName 受講コースの名前
    * @return 受講生詳細
    */
   public List<StudentDetail> searchStudentByCourseName(String courseName) {
-    List<StudentCourse> studentCourses = repository.searchStudentByCourseName(courseName);
+    List<StudentCourse> studentCourses = repository.searchStudentCourseByCourseName(courseName);
 
     return studentCourses.stream().map(course -> {
 
       List<Student> students = repository.searchStudentsById(course.getStudentsId());
+      if (students.isEmpty()) {
+        throw new NoSuchElementException(
+            "受講生が見つかりませんでした。　受講生ID：" + course.getStudentsId());
+      }
 
       List<ApplicationStatus> applicationStatuses = repository.searchApplicationStatusByCourseId(
           course.getId());
@@ -363,7 +368,7 @@ public class StudentService {
       applicationStatus.setCreatedAt(LocalDateTime.now());
       applicationStatus.setUpdatedAt(LocalDateTime.now());
 
-      registerApplicationStatus(applicationStatus);
+      repository.insertApplicationStatus(applicationStatus);
 
     });
     return studentDetail;
@@ -442,23 +447,23 @@ public class StudentService {
     List<ApplicationStatus> applicationStatuses = repository.searchApplicationStatusByStatus(
         status);
 
-    return applicationStatuses.stream().flatMap(applicationStatus -> {
+    return applicationStatuses.stream()
+        .flatMap(applicationStatus -> {
 
-      Integer id = applicationStatus.getCourseId();
-      List<StudentCourse> studentCourses = repository.searchStudentCourseById(id);
+          Integer courseId = applicationStatus.getCourseId();
 
-      return studentCourses.stream().map(studentCourse -> {
+          List<StudentCourse> studentCourses = repository.searchStudentCourseById(courseId);
 
-        Integer studentId = studentCourse.getStudentsId();
+          return studentCourses.stream().map(studentCourse -> {
+            Integer studentId = studentCourse.getStudentsId();
 
-        studentCourse.setStatus(applicationStatus.getStatus());
+            studentCourse.setStatus(applicationStatus.getStatus());
 
-        Student student = repository.searchStudentById(studentId);
+            Student student = repository.searchStudentById(studentId);
 
-        return new StudentDetail(student, List.of(studentCourse), List.of(applicationStatus));
-      });
-    }).collect(Collectors.toList());
-
-
+            return new StudentDetail(student, List.of(studentCourse), List.of(applicationStatus));
+          });
+        })
+        .collect(Collectors.toList());
   }
 }

@@ -4,6 +4,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
@@ -13,6 +14,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.Validation;
 import jakarta.validation.Validator;
+import java.util.List;
 import java.util.Set;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,8 +23,12 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
+import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 import raise.tech.student.management.controller.converter.StudentConverter;
+import raise.tech.student.management.data.ApplicationStatus;
 import raise.tech.student.management.data.Student;
+import raise.tech.student.management.domain.Status;
+import raise.tech.student.management.domain.StudentDetail;
 import raise.tech.student.management.repository.StudentRepository;
 import raise.tech.student.management.service.StudentService;
 
@@ -45,13 +51,23 @@ class StudentControllerTest {
   private Validator validator = Validation.buildDefaultValidatorFactory().getValidator();
 
   @Test
-  void 受講生詳細の一覧検索が実行できて空のリストが返ってくること() throws Exception {
-    mockMvc.perform(MockMvcRequestBuilders.get("/studentsList"))
+  void 受講生詳細の一覧検索が実行できて空のリストが返ってくること＿論理削除含む() throws Exception {
+    mockMvc.perform(MockMvcRequestBuilders.get("/allStudentsList"))
         .andExpect(status().isOk())
         .andExpect(content().json("[]"));
 
     verify(service, times(1)).searchAllStudentList();
   }
+
+  @Test
+  void 受講生詳細の一覧検索が実行できて空のリストが返ってくること＿論理削除除く() throws Exception {
+    mockMvc.perform(MockMvcRequestBuilders.get("/studentsList"))
+        .andExpect(status().isOk())
+        .andExpect(content().json("[]"));
+
+    verify(service, times(1)).searchStudentList();
+  }
+
 
   @Test
   void IDに紐づく受講生詳細が実行できて空のリストが返ってくること() throws Exception {
@@ -61,6 +77,84 @@ class StudentControllerTest {
         .andExpect(status().isOk());
 
     verify(service, times(1)).searchStudent(id);
+  }
+
+  @Test
+  void 検索した名前と一致する受講生が検索できて空のリストが返ってくること() throws Exception {
+    String fullName = "山田太郎";
+
+    mockMvc.perform(MockMvcRequestBuilders.get("/searchStudentByName/{fullName}", fullName))
+        .andExpect(status().isOk());
+
+    verify(service, times(1)).searchStudentByName(fullName);
+  }
+
+  @Test
+  void 検索したフリガナと一致する受講生が検索できて空のリストが返ってくること() throws Exception {
+    String furigana = "ヤマダタロウ";
+
+    mockMvc.perform(MockMvcRequestBuilders.get("/searchStudentByFurigana/{furigana}", furigana))
+        .andExpect(status().isOk());
+
+    verify(service, times(1)).searchStudentByFurigana(furigana);
+  }
+
+  @Test
+  void 検索した居住地域と一致する受講生が検索できて空のリストが返ってくること() throws Exception {
+    String address = "東京都";
+
+    mockMvc.perform(MockMvcRequestBuilders.get("/searchStudentByAddress/{address}", address))
+        .andExpect(status().isOk());
+
+    verify(service, times(1)).searchStudentByAddress(address);
+    List<StudentDetail> students = service.searchStudentByAddress(address);
+  }
+
+  @Test
+  void 検索した年齢と一致する受講生が検索できて空のリストが返ってくること() throws Exception {
+    Integer age = 30;
+
+    mockMvc.perform(MockMvcRequestBuilders.get("/searchStudentByAge/{age}", age))
+        .andExpect(status().isOk());
+
+    verify(service, times(1)).searchStudentByAge(age);
+    List<StudentDetail> students = service.searchStudentByAge(age);
+  }
+
+  @Test
+  void 検索した性別と一致する受講生が検索できて空のリストが返ってくること() throws Exception {
+    String sex = "男性";
+
+    mockMvc.perform(MockMvcRequestBuilders.get("/searchStudentBySex/{sex}", sex))
+        .andExpect(status().isOk());
+
+    verify(service, times(1)).searchStudentBySex(sex);
+    List<StudentDetail> students = service.searchStudentBySex(sex);
+  }
+
+  @Test
+  void 検索した受講コースの名前と一致する受講生が検索できて空のリストが帰ってくること()
+      throws Exception {
+    String courseName = "Java";
+
+    mockMvc.perform(
+            MockMvcRequestBuilders.get("/searchStudentByCourseName/{courseName}", courseName))
+        .andExpect(status().isOk());
+
+    verify(service, times(1)).searchStudentByCourseName(courseName);
+    List<StudentDetail> students = service.searchStudentByCourseName(courseName);
+  }
+
+  @Test
+  void 検索した申込状況と一致する受講生が検索できて空のリストが返ってくること() throws Exception {
+    Status testStatus = Status.仮申込;
+
+    mockMvc.perform(MockMvcRequestBuilders.get("/searchByStatus")
+            .param("status", testStatus.name()))
+        .andExpect(MockMvcResultMatchers.status().isOk());
+
+    verify(service, times(1)).searchStudentByStatus(testStatus);
+    List<StudentDetail> students = service.searchStudentByStatus(testStatus);
   }
 
   @Test
@@ -134,6 +228,24 @@ class StudentControllerTest {
         .andExpect(status().isOk());
 
     verify(service, times(1)).updateStudent(any());
+  }
+
+  @Test
+  void 申込状況が仮申込から本申込に変更されているか() throws Exception {
+    Integer testId = 123;
+    ApplicationStatus mockStatus = new ApplicationStatus();
+    mockStatus.setId(testId);
+    mockStatus.setStatus(Status.仮申込);
+
+    when(service.findStatusById(testId)).thenReturn(List.of(mockStatus));
+
+    mockMvc.perform(put("/updateStatus-toMainApplication")
+            .param("id", String.valueOf(testId)))
+        .andExpect(MockMvcResultMatchers.status().isOk());
+
+    verify(service, times(1)).findStatusById(testId);
+    verify(service, times(1)).updateStatusToMainApplication(List.of(mockStatus));
+
   }
 
   @Test
