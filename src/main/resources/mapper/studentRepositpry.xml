@@ -113,7 +113,7 @@
   </select>
 
   <!-- 受講コースの名前検索 -->
-  <select id="searchStudentByCourseName"
+  <select id="searchStudentCourseByCourseName"
     resultType="raise.tech.student.management.data.StudentCourse">
     SELECT *
     FROM students_courses
