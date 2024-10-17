@@ -29,14 +29,14 @@ public class Student {
   @NotBlank
   private String address;
 
-  private int age;
+  private Integer age;
 
   @NotBlank
   private String sex;
 
   private String remark;
 
-  private Boolean isDeleted = false;
+  private boolean isDeleted = false;
 
 
 }
