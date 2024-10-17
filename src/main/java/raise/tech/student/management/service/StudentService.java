@@ -418,6 +418,7 @@ public class StudentService {
   public void updateStatusToTakingTheCourse(List<ApplicationStatus> applicationStatus) {
     for (ApplicationStatus status : applicationStatus) {
       status.setStatus(Status.受講中);
+
       status.setUpdatedAt(LocalDateTime.now());
       repository.updateStatus(status);
     }
@@ -431,6 +432,7 @@ public class StudentService {
   public void updateStatusToCourseCompleted(List<ApplicationStatus> applicationStatus) {
     for (ApplicationStatus status : applicationStatus) {
       status.setStatus(Status.受講終了);
+
       status.setUpdatedAt(LocalDateTime.now());
       repository.updateStatus(status);
     }

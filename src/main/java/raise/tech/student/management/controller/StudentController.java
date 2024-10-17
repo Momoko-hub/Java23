@@ -226,7 +226,7 @@ public class StudentController {
             ", 更新日時: " + status.getUpdatedAt())
         .collect(Collectors.joining("\n"));
 
-    return ResponseEntity.ok("申込状況が本申込に更新されました。\n" + updatedStudentDetail);
+    return ResponseEntity.ok("申込状況が受講中に更新されました。\n" + updatedStudentDetail);
 
   }
 
@@ -247,7 +247,7 @@ public class StudentController {
             ", 更新日時: " + status.getUpdatedAt())
         .collect(Collectors.joining("\n"));
 
-    return ResponseEntity.ok("申込状況が本申込に更新されました。\n" + updatedStudentDetail);
+    return ResponseEntity.ok("申込状況が受講終了に更新されました。\n" + updatedStudentDetail);
 
   }
 
