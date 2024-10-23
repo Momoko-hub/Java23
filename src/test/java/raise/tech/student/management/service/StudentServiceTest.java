@@ -9,7 +9,6 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -39,6 +38,7 @@ class StudentServiceTest {
 
   private StudentService sut;
   private Student student;
+  private List<Student> studentList;
   private List<StudentCourse> studentCourseList;
   private List<ApplicationStatus> applicationStatus;
 
@@ -82,7 +82,6 @@ class StudentServiceTest {
   @Test
   void 受講生詳細の一覧検索_リポジトリとコンバーターの処理が適切に呼び出せていること_論理削除含む() {
     List<Student> studentList = Arrays.asList(student);
-    List<StudentCourse> studentCourses = studentCourseList;
     List<ApplicationStatus> applicationStatusList1 = Arrays.asList(applicationStatus.get(0));
     List<ApplicationStatus> applicationStatusList2 = Arrays.asList(applicationStatus.get(1));
 
@@ -100,8 +99,8 @@ class StudentServiceTest {
 
     verify(repository, times(1)).searchAllStudents();
     verify(repository, times(1)).searchStudentCourseByStudentId(12345);
-    verify(repository, times(2)).searchApplicationStatusByCourseId(111);
-    verify(repository, times(2)).searchApplicationStatusByCourseId(222);
+    verify(repository, times(1)).searchApplicationStatusByCourseId(111);
+    verify(repository, times(1)).searchApplicationStatusByCourseId(222);
     verify(converter, times(1)).convertStudentDetails(studentList, studentCourseList,
         applicationStatus);
 
@@ -129,8 +128,8 @@ class StudentServiceTest {
 
     verify(repository, times(1)).searchStudents();
     verify(repository, times(1)).searchStudentCourseByStudentId(12345);
-    verify(repository, times(2)).searchApplicationStatusByCourseId(111);
-    verify(repository, times(2)).searchApplicationStatusByCourseId(222);
+    verify(repository, times(1)).searchApplicationStatusByCourseId(111);
+    verify(repository, times(1)).searchApplicationStatusByCourseId(222);
     verify(converter, times(1)).convertStudentDetails(studentList, studentCourseList,
         applicationStatus);
 
@@ -165,27 +164,26 @@ class StudentServiceTest {
   void 受講生詳細の名前検索_検索した名前と一致する受講生とコース情報と申込状況が呼び出せていること()
       throws TestException {
 
-    when(repository.searchStudentByName("山田　太郎"))
-        .thenReturn(List.of(student));
-    when(repository.searchStudentCourseByStudentId(12345))
+    when(
+        repository.findStudentsByConditions("山田　太郎", null, null, null, null))
+        .thenReturn(studentList);
+    when(repository.findCoursesByConditions(null))
         .thenReturn(studentCourseList);
+    when(repository.findApplicationStatusByConditions(null))
+        .thenReturn(applicationStatus);
 
-    ApplicationStatus status1 = new ApplicationStatus();
-    status1.setCourseId(111);
-    status1.setStatus(Status.仮申込);
-    status1.setCreatedAt(LocalDateTime.now());
+    List<StudentDetail> expectedStudentDetails = new ArrayList<>();
+    StudentDetail studentDetail = new StudentDetail();
+    studentDetail.setStudent(student);
+    studentDetail.setStudentCourseList(studentCourseList);
+    studentDetail.setApplicationStatus(applicationStatus);
+    expectedStudentDetails.add(studentDetail);
 
-    ApplicationStatus status2 = new ApplicationStatus();
-    status2.setCourseId(222);
-    status2.setStatus(Status.仮申込);
-    status2.setCreatedAt(LocalDateTime.now());
+    when(converter.convertStudentDetails(studentList, studentCourseList, applicationStatus))
+        .thenReturn(expectedStudentDetails);
 
-    when(repository.searchApplicationStatusByCourseId(111))
-        .thenReturn(List.of(status1));
-    when(repository.searchApplicationStatusByCourseId(222))
-        .thenReturn(List.of(status2));
-
-    List<StudentDetail> resultStudentDetail = sut.searchStudentByName("山田　太郎");
+    List<StudentDetail> resultStudentDetail = sut.searchStudentsByConditions("山田　太郎", null,
+        null, null, null, null, null);
 
     assertThat(resultStudentDetail).isNotEmpty();
     assertThat(resultStudentDetail.get(0).getStudent().getFullName()).isEqualTo("山田　太郎");
@@ -201,177 +199,79 @@ class StudentServiceTest {
   }
 
   @Test
-  void 受講生詳細のフリガナ検索_検索したフリガナと一致する受講生とコース情報と申込状況が呼び出せていること()
+  void 受講生詳細のコース検索_検索したコースと一致する受講生とコース情報と申込状況が呼び出せていること()
       throws TestException {
 
-    when(repository.searchStudentByFurigana("ヤマダ　タロウ"))
-        .thenReturn(List.of(student));
-    when(repository.searchStudentCourseByStudentId(12345))
+    when(
+        repository.findStudentsByConditions(null, null, null, null, null))
+        .thenReturn(studentList);
+    when(repository.findCoursesByConditions("Java"))
         .thenReturn(studentCourseList);
+    when(repository.findApplicationStatusByConditions(null))
+        .thenReturn(applicationStatus);
 
-    ApplicationStatus status1 = new ApplicationStatus();
-    status1.setCourseId(111);
-    status1.setStatus(Status.仮申込);
+    List<StudentDetail> expectedStudentDetails = new ArrayList<>();
+    StudentDetail studentDetail = new StudentDetail();
+    studentDetail.setStudent(student);
+    studentDetail.setStudentCourseList(studentCourseList);
+    studentDetail.setApplicationStatus(applicationStatus);
+    expectedStudentDetails.add(studentDetail);
 
-    ApplicationStatus status2 = new ApplicationStatus();
-    status2.setCourseId(222);
-    status2.setStatus(Status.仮申込);
+    when(converter.convertStudentDetails(studentList, studentCourseList, applicationStatus))
+        .thenReturn(expectedStudentDetails);
 
-    when(repository.searchApplicationStatusByCourseId(111))
-        .thenReturn(List.of(status1));
-    when(repository.searchApplicationStatusByCourseId(222))
-        .thenReturn(List.of(status2));
-
-    List<StudentDetail> resultStudentDetail = sut.searchStudentByFurigana("ヤマダ　タロウ");
-
-    assertThat(resultStudentDetail).isNotEmpty();
-    assertThat(resultStudentDetail.get(0).getStudent().getFurigana()).isEqualTo("ヤマダ　タロウ");
-    assertThat(resultStudentDetail.get(0).getStudentCourseList().size()).isEqualTo(2);
-    assertThat(resultStudentDetail.get(0).getStudentCourseList().get(0).getCourseName()).isEqualTo(
-        "Java");
-    assertThat(resultStudentDetail.get(0).getApplicationStatus().get(0).getStatus()).isEqualTo(
-        Status.仮申込);
-    assertThat(resultStudentDetail.get(0).getStudentCourseList().get(1).getCourseName()).isEqualTo(
-        "AWS");
-    assertThat(resultStudentDetail.get(0).getApplicationStatus().get(1).getStatus()).isEqualTo(
-        Status.仮申込);
-  }
-
-  @Test
-  void 受講生詳細の居住地域検索_検索した居住地域と一致する受講生とコース情報と申込状況が呼び出せていること()
-      throws TestException {
-
-    when(repository.searchStudentByAddress("東京都新宿区"))
-        .thenReturn(List.of(student));
-    when(repository.searchStudentCourseByStudentId(12345))
-        .thenReturn(studentCourseList);
-
-    ApplicationStatus status1 = new ApplicationStatus();
-    status1.setCourseId(111);
-    status1.setStatus(Status.仮申込);
-
-    ApplicationStatus status2 = new ApplicationStatus();
-    status2.setCourseId(222);
-    status2.setStatus(Status.仮申込);
-
-    when(repository.searchApplicationStatusByCourseId(111))
-        .thenReturn(List.of(status1));
-    when(repository.searchApplicationStatusByCourseId(222))
-        .thenReturn(List.of(status2));
-
-    List<StudentDetail> resultStudentDetail = sut.searchStudentByAddress("東京都新宿区");
-
-    assertThat(resultStudentDetail).isNotEmpty();
-    assertThat(resultStudentDetail.get(0).getStudent().getAddress()).isEqualTo("東京都新宿区");
-    assertThat(resultStudentDetail.get(0).getStudentCourseList().size()).isEqualTo(2);
-    assertThat(resultStudentDetail.get(0).getStudentCourseList().get(0).getCourseName()).isEqualTo(
-        "Java");
-    assertThat(resultStudentDetail.get(0).getApplicationStatus().get(0).getStatus()).isEqualTo(
-        Status.仮申込);
-    assertThat(resultStudentDetail.get(0).getStudentCourseList().get(1).getCourseName()).isEqualTo(
-        "AWS");
-    assertThat(resultStudentDetail.get(0).getApplicationStatus().get(1).getStatus()).isEqualTo(
-        Status.仮申込);
-  }
-
-  @Test
-  void 受講生詳細の年齢検索_検索した年齢と一致する受講生とコース情報と申込状況が呼び出せていること()
-      throws TestException {
-
-    when(repository.searchStudentByAge(30))
-        .thenReturn(List.of(student));
-    when(repository.searchStudentCourseByStudentId(12345))
-        .thenReturn(studentCourseList);
-
-    ApplicationStatus status1 = new ApplicationStatus();
-    status1.setCourseId(111);
-    status1.setStatus(Status.仮申込);
-
-    ApplicationStatus status2 = new ApplicationStatus();
-    status2.setCourseId(222);
-    status2.setStatus(Status.仮申込);
-
-    when(repository.searchApplicationStatusByCourseId(111))
-        .thenReturn(List.of(status1));
-    when(repository.searchApplicationStatusByCourseId(222))
-        .thenReturn(List.of(status2));
-
-    List<StudentDetail> resultStudentDetail = sut.searchStudentByAge(30);
-
-    assertThat(resultStudentDetail).isNotEmpty();
-    assertThat(resultStudentDetail.get(0).getStudent().getAge()).isEqualTo(30);
-    assertThat(resultStudentDetail.get(0).getStudentCourseList().size()).isEqualTo(2);
-    assertThat(resultStudentDetail.get(0).getStudentCourseList().get(0).getCourseName()).isEqualTo(
-        "Java");
-    assertThat(resultStudentDetail.get(0).getApplicationStatus().get(0).getStatus()).isEqualTo(
-        Status.仮申込);
-    assertThat(resultStudentDetail.get(0).getStudentCourseList().get(1).getCourseName()).isEqualTo(
-        "AWS");
-    assertThat(resultStudentDetail.get(0).getApplicationStatus().get(1).getStatus()).isEqualTo(
-        Status.仮申込);
-  }
-
-  @Test
-  void 受講生詳細の性別検索_検索した性別と一致する受講生とコース情報と申込状況が呼び出せていること()
-      throws TestException {
-
-    when(repository.searchStudentBySex("男性"))
-        .thenReturn(List.of(student));
-    when(repository.searchStudentCourseByStudentId(12345))
-        .thenReturn(studentCourseList);
-
-    ApplicationStatus status1 = new ApplicationStatus();
-    status1.setCourseId(111);
-    status1.setStatus(Status.仮申込);
-
-    ApplicationStatus status2 = new ApplicationStatus();
-    status2.setCourseId(222);
-    status2.setStatus(Status.仮申込);
-
-    when(repository.searchApplicationStatusByCourseId(111))
-        .thenReturn(List.of(status1));
-    when(repository.searchApplicationStatusByCourseId(222))
-        .thenReturn(List.of(status2));
-
-    List<StudentDetail> resultStudentDetail = sut.searchStudentBySex("男性");
-
-    assertThat(resultStudentDetail).isNotEmpty();
-    assertThat(resultStudentDetail.get(0).getStudent().getSex()).isEqualTo("男性");
-    assertThat(resultStudentDetail.get(0).getStudentCourseList().size()).isEqualTo(2);
-    assertThat(resultStudentDetail.get(0).getStudentCourseList().get(0).getCourseName()).isEqualTo(
-        "Java");
-    assertThat(resultStudentDetail.get(0).getApplicationStatus().get(0).getStatus()).isEqualTo(
-        Status.仮申込);
-    assertThat(resultStudentDetail.get(0).getStudentCourseList().get(1).getCourseName()).isEqualTo(
-        "AWS");
-    assertThat(resultStudentDetail.get(0).getApplicationStatus().get(1).getStatus()).isEqualTo(
-        Status.仮申込);
-  }
-
-  @Test
-  void 受講生詳細の受講コース検索_検索した受講コースと一致する受講生とコース情報と申込状況が呼び出せていること()
-      throws TestException {
-
-    when(repository.searchStudentCourseByCourseName("Java"))
-        .thenReturn(studentCourseList);
-    when(repository.searchStudentsById(12345))
-        .thenReturn(List.of(student));
-
-    ApplicationStatus status1 = new ApplicationStatus();
-    status1.setCourseId(111);
-    status1.setStatus(Status.仮申込);
-
-    when(repository.searchApplicationStatusByCourseId(111))
-        .thenReturn(List.of(status1));
-
-    List<StudentDetail> resultStudentDetail = sut.searchStudentByCourseName("Java");
+    List<StudentDetail> resultStudentDetail = sut.searchStudentsByConditions(null, null,
+        null, null, null, "Java", null);
 
     assertThat(resultStudentDetail).isNotEmpty();
     assertThat(resultStudentDetail.get(0).getStudent().getFullName()).isEqualTo("山田　太郎");
-    assertThat(resultStudentDetail.get(0).getStudentCourseList().size()).isEqualTo(1);
+    assertThat(resultStudentDetail.get(0).getStudentCourseList().size()).isEqualTo(2);
     assertThat(resultStudentDetail.get(0).getStudentCourseList().get(0).getCourseName()).isEqualTo(
         "Java");
     assertThat(resultStudentDetail.get(0).getApplicationStatus().get(0).getStatus()).isEqualTo(
+        Status.仮申込);
+    assertThat(resultStudentDetail.get(0).getStudentCourseList().get(1).getCourseName()).isEqualTo(
+        "AWS");
+    assertThat(resultStudentDetail.get(0).getApplicationStatus().get(1).getStatus()).isEqualTo(
+        Status.仮申込);
+  }
+
+
+  @Test
+  void 受講生詳細の申込状況検索_検索した申込状況と一致する受講生とコース情報と申込状況が呼び出せていること()
+      throws TestException {
+
+    when(
+        repository.findStudentsByConditions(null, null, null, null, null))
+        .thenReturn(studentList);
+    when(repository.findCoursesByConditions(null))
+        .thenReturn(studentCourseList);
+    when(repository.findApplicationStatusByConditions(Status.仮申込))
+        .thenReturn(applicationStatus);
+
+    List<StudentDetail> expectedStudentDetails = new ArrayList<>();
+    StudentDetail studentDetail = new StudentDetail();
+    studentDetail.setStudent(student);
+    studentDetail.setStudentCourseList(studentCourseList);
+    studentDetail.setApplicationStatus(applicationStatus);
+    expectedStudentDetails.add(studentDetail);
+
+    when(converter.convertStudentDetails(studentList, studentCourseList, applicationStatus))
+        .thenReturn(expectedStudentDetails);
+
+    List<StudentDetail> resultStudentDetail = sut.searchStudentsByConditions(null, null,
+        null, null, null, null, Status.仮申込);
+
+    assertThat(resultStudentDetail).isNotEmpty();
+    assertThat(resultStudentDetail.get(0).getStudent().getFullName()).isEqualTo("山田　太郎");
+    assertThat(resultStudentDetail.get(0).getStudentCourseList().size()).isEqualTo(2);
+    assertThat(resultStudentDetail.get(0).getStudentCourseList().get(0).getCourseName()).isEqualTo(
+        "Java");
+    assertThat(resultStudentDetail.get(0).getApplicationStatus().get(0).getStatus()).isEqualTo(
+        Status.仮申込);
+    assertThat(resultStudentDetail.get(0).getStudentCourseList().get(1).getCourseName()).isEqualTo(
+        "AWS");
+    assertThat(resultStudentDetail.get(0).getApplicationStatus().get(1).getStatus()).isEqualTo(
         Status.仮申込);
   }
 

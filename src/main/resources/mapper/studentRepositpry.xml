@@ -181,5 +181,46 @@
     WHERE id = #{id}
   </update>
 
+  <!-- 受講生の条件検索 -->
+  <select id="findStudentsByConditions" resultType="raise.tech.student.management.data.Student">
+    SELECT * FROM students
+    WHERE 1=1
+    <if test="fullName != null and fullName != ''">
+      AND full_name = #{fullName}
+    </if>
+    <if test="furigana != null and furigana != ''">
+      AND furigana = #{furigana}
+    </if>
+    <if test="address != null and address != ''">
+      AND address = #{address}
+    </if>
+    <if test="age != null and age != ''">
+      AND age = #{age}
+    </if>
+    <if test="sex != null and sex != ''">
+      AND sex = #{sex}
+    </if>
+  </select>
+
+  <!-- 受講生コースの条件検索 -->
+  <select id="findCoursesByConditions"
+    resultType="raise.tech.student.management.data.StudentCourse">
+    SELECT * FROM students_courses
+    WHERE 1=1
+    <if test="courseName != null and courseName != ''">
+      AND course_name = #{courseName}
+    </if>
+  </select>
+
+  <!-- 申込状況の条件検索 -->
+  <select id="findApplicationStatusByConditions"
+    resultType="raise.tech.student.management.data.ApplicationStatus">
+    SELECT * FROM application_status
+    WHERE 1=1
+    <if test="status != null">
+      AND status = #{status}
+    </if>
+  </select>
+
 
 </mapper>

@@ -2,7 +2,6 @@ package raise.tech.student.management.service;
 
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.NoSuchElementException;
 import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -13,7 +12,6 @@ import raise.tech.student.management.data.Student;
 import raise.tech.student.management.data.StudentCourse;
 import raise.tech.student.management.domain.Status;
 import raise.tech.student.management.domain.StudentDetail;
-import raise.tech.student.management.exception.TestException;
 import raise.tech.student.management.repository.StudentRepository;
 
 /**
@@ -41,27 +39,17 @@ public class StudentService {
   public List<StudentDetail> searchAllStudentList() {
     List<Student> studentList = repository.searchAllStudents();
 
-    List<StudentCourse> updatedCourses = studentList.stream().flatMap(student -> {
-
-      List<StudentCourse> studentCourseList = repository.searchStudentCourseByStudentId(
-          student.getId());
-
-      return studentCourseList.stream().map(course -> {
-        List<ApplicationStatus> applicationStatuses = repository.searchApplicationStatusByCourseId(
-            course.getId());
-
-        if (!applicationStatuses.isEmpty()) {
-          course.setStatus(applicationStatuses.getFirst().getStatus());
-        }
-        return course;
-      });
-    }).collect(Collectors.toList());
-
-    List<ApplicationStatus> applicationStatusList = updatedCourses.stream()
-        .flatMap(course -> repository.searchApplicationStatusByCourseId(course.getId()).stream())
+    List<StudentCourse> studentCourseList = studentList.stream()
+        .flatMap(student -> repository.searchStudentCourseByStudentId(student.getId()).stream())
         .collect(Collectors.toList());
 
-    return converter.convertStudentDetails(studentList, updatedCourses, applicationStatusList);
+    List<ApplicationStatus> applicationStatusList = studentCourseList.stream()
+        .flatMap(
+            studentCourse -> repository.searchApplicationStatusByCourseId(studentCourse.getId())
+                .stream())
+        .collect(Collectors.toList());
+
+    return converter.convertStudentDetails(studentList, studentCourseList, applicationStatusList);
   }
 
   /**
@@ -72,27 +60,17 @@ public class StudentService {
   public List<StudentDetail> searchStudentList() {
     List<Student> studentList = repository.searchStudents();
 
-    List<StudentCourse> updatedCourses = studentList.stream().flatMap(student -> {
-
-      List<StudentCourse> studentCourseList = repository.searchStudentCourseByStudentId(
-          student.getId());
-
-      return studentCourseList.stream().map(course -> {
-        List<ApplicationStatus> applicationStatuses = repository.searchApplicationStatusByCourseId(
-            course.getId());
-
-        if (!applicationStatuses.isEmpty()) {
-          course.setStatus(applicationStatuses.getFirst().getStatus());
-        }
-        return course;
-      });
-    }).collect(Collectors.toList());
-
-    List<ApplicationStatus> applicationStatusList = updatedCourses.stream()
-        .flatMap(course -> repository.searchApplicationStatusByCourseId(course.getId()).stream())
+    List<StudentCourse> studentCourseList = studentList.stream()
+        .flatMap(student -> repository.searchStudentCourseByStudentId(student.getId()).stream())
         .collect(Collectors.toList());
 
-    return converter.convertStudentDetails(studentList, updatedCourses, applicationStatusList);
+    List<ApplicationStatus> applicationStatusList = studentCourseList.stream()
+        .flatMap(
+            studentCourse -> repository.searchApplicationStatusByCourseId(studentCourse.getId())
+                .stream())
+        .collect(Collectors.toList());
+
+    return converter.convertStudentDetails(studentList, studentCourseList, applicationStatusList);
   }
 
 
@@ -124,204 +102,21 @@ public class StudentService {
   }
 
   /**
-   * 受講生の名前検索です。名前が一致する（部分一致含む）受講生情報を取得した後、その受講生に紐づく受講生コース情報、申込状況を取得して設定します。
+   * 受講生詳細検索です。条件と一致する受講生情報を取得した後、その受講生に紐づく受講生コース情報、申込状況を取得して設定します。
+   * 検索可能条件（名前、フリガナ、居住地域、年齢、性別、受講コース、申込状況）
    *
-   * @param fullName 受講生の名前
    * @return 受講生詳細
    */
-  public List<StudentDetail> searchStudentByName(String fullName) throws TestException {
-    List<Student> students = repository.searchStudentByName(fullName);
+  public List<StudentDetail> searchStudentsByConditions(String fullName, String furigana,
+      String address, Integer age, String sex, String courseName, Status status) {
 
-    if (students.isEmpty()) {
-      throw new TestException(fullName + "と一致する受講生が見つかりませんでした");
-    }
+    List<Student> students = repository.findStudentsByConditions(fullName, furigana, address, age,
+        sex);
+    List<StudentCourse> studentCourses = repository.findCoursesByConditions(courseName);
+    List<ApplicationStatus> applicationStatuses = repository.findApplicationStatusByConditions(
+        status);
 
-    return students.stream().map(student -> {
-
-      List<StudentCourse> studentCourses = repository.searchStudentCourseByStudentId(
-          student.getId());
-
-      List<StudentCourse> updatesCourses = studentCourses.stream().peek(course -> {
-            List<ApplicationStatus> applicationStatuses = repository.searchApplicationStatusByCourseId(
-                course.getId());
-
-            if (!applicationStatuses.isEmpty()) {
-              course.setStatus(applicationStatuses.getFirst().getStatus());
-            }
-          })
-          .toList();
-
-      List<ApplicationStatus> applicationStatuses = studentCourses.stream()
-          .flatMap(course -> repository.searchApplicationStatusByCourseId(course.getId()).stream())
-          .collect(Collectors.toList());
-
-      return new StudentDetail(student, studentCourses, applicationStatuses);
-    }).collect(Collectors.toList());
-  }
-
-  /**
-   * 受講生のフリガナ検索です。フリガナが一致する（部分一致含む）受講生情報を取得した後、その受講生に紐づく受講生コース情報、申込状況を取得して設定します。
-   *
-   * @param furigana 受講生のフリガナ
-   * @return 受講生詳細
-   */
-  public List<StudentDetail> searchStudentByFurigana(String furigana) throws TestException {
-    List<Student> students = repository.searchStudentByFurigana(furigana);
-
-    if (students.isEmpty()) {
-      throw new TestException(furigana + "と一致する受講生が見つかりませんでした");
-    }
-    return students.stream().map(student -> {
-
-      List<StudentCourse> studentCourses = repository.searchStudentCourseByStudentId(
-          student.getId());
-
-      List<StudentCourse> updatesCourses = studentCourses.stream().peek(course -> {
-            List<ApplicationStatus> applicationStatuses = repository.searchApplicationStatusByCourseId(
-                course.getId());
-
-            if (!applicationStatuses.isEmpty()) {
-              course.setStatus(applicationStatuses.getFirst().getStatus());
-            }
-          })
-          .toList();
-      List<ApplicationStatus> applicationStatuses = studentCourses.stream()
-          .flatMap(course -> repository.searchApplicationStatusByCourseId(course.getId()).stream())
-          .collect(Collectors.toList());
-
-      return new StudentDetail(student, studentCourses, applicationStatuses);
-    }).collect(Collectors.toList());
-  }
-
-  /**
-   * 受講生の居住地域（市区町村）検索です。居住地域が一致する（部分一致含む）受講生情報を取得した後、その受講生に紐づく受講生コース情報、申込状況を取得して設定します。
-   *
-   * @param address 受講生の居住地域（市区町村）
-   * @return 受講生詳細
-   */
-  public List<StudentDetail> searchStudentByAddress(String address) throws TestException {
-    List<Student> students = repository.searchStudentByAddress(address);
-
-    if (students.isEmpty()) {
-      throw new TestException("条件と一致する受講生が見つかりませんでした。居住地域：" + address);
-    }
-
-    return students.stream().map(student -> {
-
-      List<StudentCourse> studentCourses = repository.searchStudentCourseByStudentId(
-          student.getId());
-
-      List<StudentCourse> updatesCourses = studentCourses.stream().peek(course -> {
-            List<ApplicationStatus> applicationStatuses = repository.searchApplicationStatusByCourseId(
-                course.getId());
-
-            if (!applicationStatuses.isEmpty()) {
-              course.setStatus(applicationStatuses.getFirst().getStatus());
-            }
-          })
-          .toList();
-
-      List<ApplicationStatus> applicationStatuses = studentCourses.stream()
-          .flatMap(course -> repository.searchApplicationStatusByCourseId(course.getId()).stream())
-          .collect(Collectors.toList());
-
-      return new StudentDetail(student, studentCourses, applicationStatuses);
-    }).collect(Collectors.toList());
-  }
-
-  /**
-   * 受講生の年齢検索です。年齢が一致する受講生情報を取得した後、その受講生に紐づく受講生コース情報、申込状況を取得して設定します。
-   *
-   * @param age 受講生の年齢
-   * @return 受講生詳細
-   */
-  public List<StudentDetail> searchStudentByAge(Integer age) throws TestException {
-    List<Student> students = repository.searchStudentByAge(age);
-
-    if (students.isEmpty()) {
-      throw new TestException("条件と一致する受講生が見つかりませんでした。年齢：" + age);
-    }
-    return students.stream().map(student -> {
-
-      List<StudentCourse> studentCourses = repository.searchStudentCourseByStudentId(
-          student.getId());
-
-      List<StudentCourse> updatesCourses = studentCourses.stream().peek(course -> {
-            List<ApplicationStatus> applicationStatuses = repository.searchApplicationStatusByCourseId(
-                course.getId());
-
-            if (!applicationStatuses.isEmpty()) {
-              course.setStatus(applicationStatuses.getFirst().getStatus());
-            }
-          })
-          .toList();
-
-      List<ApplicationStatus> applicationStatuses = studentCourses.stream()
-          .flatMap(course -> repository.searchApplicationStatusByCourseId(course.getId()).stream())
-          .collect(Collectors.toList());
-
-      return new StudentDetail(student, studentCourses, applicationStatuses);
-    }).collect(Collectors.toList());
-  }
-
-  /**
-   * 受講生の性別検索です。性別が一致する受講生情報を取得した後、その受講生に紐づく受講生コース情報、申込状況を取得して設定します。
-   *
-   * @param sex 受講生の名前
-   * @return 受講生詳細
-   */
-  public List<StudentDetail> searchStudentBySex(String sex) {
-    List<Student> students = repository.searchStudentBySex(sex);
-
-    return students.stream().map(student -> {
-
-      List<StudentCourse> studentCourses = repository.searchStudentCourseByStudentId(
-          student.getId());
-
-      List<StudentCourse> updatesCourses = studentCourses.stream().peek(course -> {
-            List<ApplicationStatus> applicationStatuses = repository.searchApplicationStatusByCourseId(
-                course.getId());
-
-            if (!applicationStatuses.isEmpty()) {
-              course.setStatus(applicationStatuses.getFirst().getStatus());
-            }
-          })
-          .toList();
-
-      List<ApplicationStatus> applicationStatuses = studentCourses.stream()
-          .flatMap(course -> repository.searchApplicationStatusByCourseId(course.getId()).stream())
-          .collect(Collectors.toList());
-
-      return new StudentDetail(student, studentCourses, applicationStatuses);
-    }).collect(Collectors.toList());
-  }
-
-  /**
-   * 受講コースの名前検索です。受講コースが一致する受講生情報を取得した後、その受講生に紐づく受講生コース情報、申込状況を取得して設定します。
-   * 複数のコースを受講している場合でも検索したコースのみが表示されます。
-   *
-   * @param courseName 受講コースの名前
-   * @return 受講生詳細
-   */
-  public List<StudentDetail> searchStudentByCourseName(String courseName) {
-    List<StudentCourse> studentCourses = repository.searchStudentCourseByCourseName(courseName);
-
-    return studentCourses.stream().map(course -> {
-
-      List<Student> students = repository.searchStudentsById(course.getStudentsId());
-      if (students.isEmpty()) {
-        throw new NoSuchElementException(
-            "受講生が見つかりませんでした。　受講生ID：" + course.getStudentsId());
-      }
-
-      List<ApplicationStatus> applicationStatuses = repository.searchApplicationStatusByCourseId(
-          course.getId());
-
-      if (!applicationStatuses.isEmpty()) {
-        course.setStatus(applicationStatuses.getFirst().getStatus());
-      }
-      return new StudentDetail(students.get(0), List.of(course), applicationStatuses);
-    }).collect(Collectors.toList());
+    return converter.convertStudentDetails(students, studentCourses, applicationStatuses);
   }
 
   /**
@@ -335,14 +130,6 @@ public class StudentService {
     studentCourses.setStudentsId(student.getId());
     studentCourses.setStartDate(now);
     studentCourses.setEndDate(now.plusYears(1));
-  }
-
-  public void registerApplicationStatus(ApplicationStatus applicationStatus) {
-    LocalDateTime now = LocalDateTime.now();
-
-    applicationStatus.setCreatedAt(now);
-    applicationStatus.setUpdatedAt(now);
-    repository.insertApplicationStatus(applicationStatus);
   }
 
   /**
@@ -468,4 +255,5 @@ public class StudentService {
         })
         .collect(Collectors.toList());
   }
+
 }

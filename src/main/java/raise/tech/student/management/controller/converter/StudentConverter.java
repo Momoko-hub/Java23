@@ -24,7 +24,9 @@ public class StudentConverter {
    */
   public List<StudentDetail> convertStudentDetails(List<Student> studentList,
       List<StudentCourse> studentCourseList, List<ApplicationStatus> applicationStatusList) {
+
     List<StudentDetail> studentDetails = new ArrayList<>();
+
     studentList.forEach(student -> {
       StudentDetail studentDetail = new StudentDetail();
       studentDetail.setStudent(student);
@@ -33,19 +35,26 @@ public class StudentConverter {
           .filter(studentCourse -> student.getId().equals(studentCourse.getStudentsId()))
           .collect(Collectors.toList());
 
-      List<ApplicationStatus> convertApplicationStatus = applicationStatusList.stream()
-          .filter(applicationStatus ->
-              convertStudentCourseList.stream()
-                  .anyMatch(studentCourse ->
-                      applicationStatus.getCourseId() != null &&
-                          applicationStatus.getCourseId().equals(studentCourse.getId()))
-          )
-          .collect(Collectors.toList());
+      convertStudentCourseList.forEach(studentCourse -> {
+        applicationStatusList.stream()
+            .filter(status ->
+                status.getCourseId().equals(studentCourse.getId()))
+            .findFirst()
+            .ifPresent(status -> studentCourse.setStatus(status.getStatus()));
+      });
 
       studentDetail.setStudentCourseList(convertStudentCourseList);
-      studentDetail.setApplicationStatus(convertApplicationStatus);
+
+      studentDetail.setApplicationStatus(applicationStatusList.stream()
+          .filter(status ->
+              convertStudentCourseList.stream()
+                  .anyMatch(studentCourse ->
+                      status.getCourseId().equals(studentCourse.getId())))
+          .collect(Collectors.toList()));
+
       studentDetails.add(studentDetail);
     });
+
     return studentDetails;
   }
 

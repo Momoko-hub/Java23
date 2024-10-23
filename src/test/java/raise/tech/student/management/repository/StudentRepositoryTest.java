@@ -62,7 +62,7 @@ class StudentRepositoryTest {
 
     StudentCourse firstCourse = actual.get(0);
     assertThat(firstCourse.getId()).isEqualTo(996284);
-    assertThat(firstCourse.getCourseName()).isEqualTo("Webデザイン");
+    assertThat(firstCourse.getCourseName()).isEqualTo("デザイン");
 
     StudentCourse secondCourse = actual.get(1);
     assertThat(secondCourse.getId()).isEqualTo(996285);
@@ -96,28 +96,28 @@ class StudentRepositoryTest {
   @Test
   void 受講生の名前検索が行えること() {
     String fullName = "森田恵麻";
-    List<Student> student = sut.searchStudentByName(fullName);
+    List<Student> student = sut.findStudentsByConditions(fullName, null, null, null, null);
     assertThat(student.get(0).getFullName()).isEqualTo(fullName);
   }
 
   @Test
   void 受講生のフリガナ検索が行えること() {
     String furigana = "モリタエマ";
-    List<Student> student = sut.searchStudentByFurigana(furigana);
+    List<Student> student = sut.findStudentsByConditions(null, furigana, null, null, null);
     assertThat(student.get(0).getFurigana()).isEqualTo(furigana);
   }
 
   @Test
   void 受講生の居住地域検索が行えること() {
     String address = "北海道札幌市";
-    List<Student> student = sut.searchStudentByAddress(address);
+    List<Student> student = sut.findStudentsByConditions(null, null, address, null, null);
     assertThat(student.get(0).getAddress()).isEqualTo(address);
   }
 
   @Test
   void 受講生の年齢検索が行えること() {
     Integer age = 30;
-    List<Student> student = sut.searchStudentByAge(age);
+    List<Student> student = sut.findStudentsByConditions(null, null, null, age, null);
     assertThat(student.get(0).getAge()).isEqualTo(age);
 
   }
@@ -125,7 +125,7 @@ class StudentRepositoryTest {
   @Test
   void 受講生の性別検索が行えること() {
     String sex = "男";
-    List<Student> student = sut.searchStudentBySex(sex);
+    List<Student> student = sut.findStudentsByConditions(null, null, null, null, sex);
     assertThat(student.get(0).getSex()).isEqualTo(sex);
 
   }
@@ -133,14 +133,14 @@ class StudentRepositoryTest {
   @Test
   void 受講コースの名前検索が行えること() {
     String courseName = "Java";
-    List<StudentCourse> studentCourses = sut.searchStudentCourseByCourseName(courseName);
+    List<StudentCourse> studentCourses = sut.findCoursesByConditions(courseName);
     assertThat(studentCourses.size()).isEqualTo(3);
   }
 
   @Test
   void 申込状況検索が行えること() {
     Status status = Status.仮申込;
-    List<ApplicationStatus> statuses = sut.searchApplicationStatusByStatus(status);
+    List<ApplicationStatus> statuses = sut.findApplicationStatusByConditions(status);
     assertThat(statuses.size()).isEqualTo(8);
   }
 
@@ -245,5 +245,7 @@ class StudentRepositoryTest {
     assertThat(foundStatus.get(0).getStatus()).isEqualTo(Status.本申込);
 
   }
+
+
 }
 

@@ -2,6 +2,7 @@ package raise.tech.student.management.repository;
 
 import java.util.List;
 import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Param;
 import raise.tech.student.management.data.ApplicationStatus;
 import raise.tech.student.management.data.Student;
 import raise.tech.student.management.data.StudentCourse;
@@ -188,4 +189,14 @@ public interface StudentRepository {
   void updateStatus(ApplicationStatus applicationStatus);
 
 
+  List<Student> findStudentsByConditions(
+      @Param("fullName") String fullName,
+      @Param("furigana") String furigana,
+      @Param("address") String address,
+      @Param("age") Integer age,
+      @Param("sex") String sex);
+
+  List<StudentCourse> findCoursesByConditions(@Param("courseName") String courseName);
+
+  List<ApplicationStatus> findApplicationStatusByConditions(@Param("status") Status status);
 }
