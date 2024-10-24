@@ -186,15 +186,15 @@
     SELECT * FROM students
     WHERE 1=1
     <if test="fullName != null and fullName != ''">
-      AND full_name = #{fullName}
+      AND full_name LIKE CONCAT('%', #{fullName}, '%')
     </if>
     <if test="furigana != null and furigana != ''">
-      AND furigana = #{furigana}
+      AND furigana LIKE CONCAT('%', #{furigana}, '%')
     </if>
     <if test="address != null and address != ''">
-      AND address = #{address}
+      AND address LIKE CONCAT('%', #{address}, '%')
     </if>
-    <if test="age != null and age != ''">
+    <if test="age != null">
       AND age = #{age}
     </if>
     <if test="sex != null and sex != ''">

@@ -199,6 +199,36 @@ class StudentServiceTest {
   }
 
   @Test
+  void 受講生詳細の部分一致検索_検索した名前と一致する受講生とコース情報と申込状況が呼び出せていること()
+      throws TestException {
+    String partialFullName = "山";
+
+    when(
+        repository.findStudentsByConditions(partialFullName, null, null, null, null))
+        .thenReturn(studentList);
+    when(repository.findCoursesByConditions(null))
+        .thenReturn(studentCourseList);
+    when(repository.findApplicationStatusByConditions(null))
+        .thenReturn(applicationStatus);
+
+    List<StudentDetail> expectedStudentDetails = new ArrayList<>();
+    StudentDetail studentDetail = new StudentDetail();
+    studentDetail.setStudent(student);
+    studentDetail.setStudentCourseList(studentCourseList);
+    studentDetail.setApplicationStatus(applicationStatus);
+    expectedStudentDetails.add(studentDetail);
+
+    when(converter.convertStudentDetails(studentList, studentCourseList, applicationStatus))
+        .thenReturn(expectedStudentDetails);
+
+    List<StudentDetail> resultStudentDetail = sut.searchStudentsByConditions(
+        partialFullName, null, null, null, null, null, null);
+
+    assertThat(resultStudentDetail).isNotEmpty();
+    assertThat(resultStudentDetail.get(0).getStudent().getFullName()).contains(partialFullName);
+  }
+
+  @Test
   void 受講生詳細のコース検索_検索したコースと一致する受講生とコース情報と申込状況が呼び出せていること()
       throws TestException {
 
