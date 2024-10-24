@@ -4,6 +4,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
@@ -13,6 +14,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.Validation;
 import jakarta.validation.Validator;
+import java.util.Arrays;
+import java.util.List;
 import java.util.Set;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,8 +24,13 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
+import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 import raise.tech.student.management.controller.converter.StudentConverter;
+import raise.tech.student.management.data.ApplicationStatus;
 import raise.tech.student.management.data.Student;
+import raise.tech.student.management.data.StudentCourse;
+import raise.tech.student.management.domain.Status;
+import raise.tech.student.management.domain.StudentDetail;
 import raise.tech.student.management.repository.StudentRepository;
 import raise.tech.student.management.service.StudentService;
 
@@ -36,21 +44,34 @@ class StudentControllerTest {
   private StudentService service;
 
   @MockBean
-  private StudentConverter converter;
+  private StudentRepository repository;
 
   @MockBean
-  private StudentRepository repository;
+  private StudentConverter converter;
+
+  private List<StudentDetail> studentDetailList;
 
   private Validator validator = Validation.buildDefaultValidatorFactory().getValidator();
 
   @Test
-  void 受講生詳細の一覧検索が実行できて空のリストが返ってくること() throws Exception {
-    mockMvc.perform(MockMvcRequestBuilders.get("/studentsList"))
+  void 受講生詳細の一覧検索が実行できて空のリストが返ってくること＿論理削除含む() throws Exception {
+    mockMvc.perform(MockMvcRequestBuilders.get("/students"))
         .andExpect(status().isOk())
         .andExpect(content().json("[]"));
 
     verify(service, times(1)).searchStudentList();
   }
+
+  @Test
+  void 受講生詳細の一覧検索が実行できて空のリストが返ってくること＿論理削除除く() throws Exception {
+    mockMvc.perform(MockMvcRequestBuilders.get("/students")
+            .param("includeDeleted", "true"))
+        .andExpect(status().isOk())
+        .andExpect(content().json("[]"));
+
+    verify(service, times(1)).searchAllStudentList();
+  }
+
 
   @Test
   void IDに紐づく受講生詳細が実行できて空のリストが返ってくること() throws Exception {
@@ -61,6 +82,34 @@ class StudentControllerTest {
 
     verify(service, times(1)).searchStudent(id);
   }
+
+  @Test
+  void 名前検索で受講生詳細を取得できるか() {
+
+    Student student = new Student();
+    student.setFullName("テスト花子");
+
+    StudentCourse course1 = new StudentCourse();
+    course1.setCourseName("Java");
+
+    StudentCourse course2 = new StudentCourse();
+    course2.setCourseName("AWS");
+
+    StudentDetail studentDetail = new StudentDetail();
+    studentDetail.setStudent(student);
+    studentDetail.setStudentCourseList(Arrays.asList(course1, course2));
+
+    when(service.searchStudentsByConditions("テスト花子", null, null, null, null, null, null))
+        .thenReturn(Arrays.asList(studentDetail));
+
+    List<StudentDetail> result = service.searchStudentsByConditions("テスト花子", null, null, null,
+        null, null, null);
+
+    assertThat(result).hasSize(1);
+    assertThat(result.get(0).getStudent().getFullName()).isEqualTo("テスト花子");
+    assertThat(result.get(0).getStudentCourseList()).hasSize(2);
+  }
+
 
   @Test
   void 受講生詳細の登録が実行されているか() throws Exception {
@@ -136,11 +185,21 @@ class StudentControllerTest {
   }
 
   @Test
-  void 受講生詳細の例外APIが実行できてステータスが400で返ってくること() throws Exception {
-    mockMvc.perform(get("/students"))
-        .andExpect(status().is4xxClientError())
-        .andExpect(content().string(
-            "現在このAPIは使用できません。URLは「students』ではなく「studentsList」を利用してください。"));
+  void 申込状況が仮申込から本申込に変更されているか() throws Exception {
+    Integer testId = 123;
+    ApplicationStatus mockStatus = new ApplicationStatus();
+    mockStatus.setId(testId);
+    mockStatus.setStatus(Status.仮申込);
+
+    when(service.findStatusById(testId)).thenReturn(List.of(mockStatus));
+
+    mockMvc.perform(put("/updateStatus-toMainApplication")
+            .param("id", String.valueOf(testId)))
+        .andExpect(MockMvcResultMatchers.status().isOk());
+
+    verify(service, times(1)).findStatusById(testId);
+    verify(service, times(1)).updateStatusToMainApplication(List.of(mockStatus));
+
   }
 
   @Test
@@ -173,5 +232,13 @@ class StudentControllerTest {
 
     Set<ConstraintViolation<Student>> violations = validator.validate(student);
     assertThat(violations.size()).isEqualTo(1);
+  }
+
+  @Test
+  void 受講生詳細の例外APIが実行できてステータスが400で返ってくること() throws Exception {
+    mockMvc.perform(get("/DescriptionStudents"))
+        .andExpect(status().is4xxClientError())
+        .andExpect(content().string(
+            "現在このAPIは使用できません。URLは「students』ではなく「studentsList」を利用してください。"));
   }
 }
