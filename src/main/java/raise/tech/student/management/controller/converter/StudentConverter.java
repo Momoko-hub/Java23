@@ -1,6 +1,5 @@
 package raise.tech.student.management.controller.converter;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 import org.springframework.stereotype.Component;
@@ -25,37 +24,54 @@ public class StudentConverter {
   public List<StudentDetail> convertStudentDetails(List<Student> studentList,
       List<StudentCourse> studentCourseList, List<ApplicationStatus> applicationStatusList) {
 
-    List<StudentDetail> studentDetails = new ArrayList<>();
+    return studentList.stream()
+        .map(student -> createStudentDetail(student, studentCourseList, applicationStatusList))
+        .collect(Collectors.toList());
 
-    studentList.forEach(student -> {
-      StudentDetail studentDetail = new StudentDetail();
-      studentDetail.setStudent(student);
+  }
 
-      List<StudentCourse> convertStudentCourseList = studentCourseList.stream()
-          .filter(studentCourse -> student.getId().equals(studentCourse.getStudentsId()))
-          .collect(Collectors.toList());
+  private StudentDetail createStudentDetail(Student student, List<StudentCourse> studentCourseList,
+      List<ApplicationStatus> applicationStatusList) {
 
-      convertStudentCourseList.forEach(studentCourse -> {
+    StudentDetail studentDetail = new StudentDetail();
+    studentDetail.setStudent(student);
+
+    List<StudentCourse> courseForStudent = filterStudentCourses(student, studentCourseList);
+    setCourseStatus(courseForStudent, applicationStatusList);
+
+    studentDetail.setStudentCourseList(courseForStudent);
+
+    studentDetail.setApplicationStatus(
+        getApplicationStatuss(courseForStudent, applicationStatusList));
+
+    return studentDetail;
+  }
+
+  private List<StudentCourse> filterStudentCourses(Student student,
+      List<StudentCourse> studentCourseList) {
+
+    return studentCourseList.stream()
+        .filter(course -> course.getStudentsId().equals(student.getId()))
+        .collect(Collectors.toList());
+  }
+
+  private void setCourseStatus(List<StudentCourse> courseForStudent,
+      List<ApplicationStatus> applicationStatusList) {
+    courseForStudent.forEach(course ->
         applicationStatusList.stream()
-            .filter(status ->
-                status.getCourseId().equals(studentCourse.getId()))
+            .filter(status -> status.getCourseId().equals(course.getId()))
             .findFirst()
-            .ifPresent(status -> studentCourse.setStatus(status.getStatus()));
-      });
+            .ifPresent(status -> course.setStatus(status.getStatus())));
+  }
 
-      studentDetail.setStudentCourseList(convertStudentCourseList);
+  private List<ApplicationStatus> getApplicationStatuss(List<StudentCourse> courseForStudent,
+      List<ApplicationStatus> applicationStatusList) {
 
-      studentDetail.setApplicationStatus(applicationStatusList.stream()
-          .filter(status ->
-              convertStudentCourseList.stream()
-                  .anyMatch(studentCourse ->
-                      status.getCourseId().equals(studentCourse.getId())))
-          .collect(Collectors.toList()));
+    return applicationStatusList.stream()
+        .filter(status -> courseForStudent.stream()
+            .anyMatch(course -> course.getId().equals(status.getCourseId())))
+        .collect(Collectors.toList());
 
-      studentDetails.add(studentDetail);
-    });
-
-    return studentDetails;
   }
 
 }
