@@ -116,14 +116,25 @@ public class StudentController {
    * @return 実行結果
    */
   @Operation(summary = "受講生更新", description = "申込状況を仮申込から本申込に更新します")
-  @PutMapping("/updateStatus-toMainApplication")
-  public ResponseEntity<String> updateStatusToMainApplication(@RequestParam Integer id) {
+  @PutMapping("/students/request-status")
+  public ResponseEntity<String> updateStatus(@RequestParam Integer id,
+      @RequestParam Status status) {
     List<ApplicationStatus> applicationStatus = service.findStatusById(id);
-    service.updateStatusToMainApplication(applicationStatus);
 
+    switch (status) {
+      case Status.仮申込 -> service.updateStatusToMainApplication(applicationStatus);
+
+      case Status.本申込 -> service.updateStatusToTakingTheCourse(applicationStatus);
+
+      case Status.受講中 -> service.updateStatusToCourseCompleted(applicationStatus);
+
+      default -> {
+        return ResponseEntity.badRequest().body("ステータスが更新できませんでした：" + status);
+      }
+    }
     String updatedStudentDetail = applicationStatus.stream()
-        .map(status -> "ID: " + status.getId() + ", 申込状況: " + status.getStatus() +
-            ", 更新日時: " + status.getUpdatedAt())
+        .map(as -> "ID:" + as.getId() + ", 申込状況:" + as.getStatus()
+            + ", 更新日時:" + as.getUpdatedAt())
         .collect(Collectors.joining("\n"));
 
     return ResponseEntity.ok("申込状況が本申込に更新されました。\n" + updatedStudentDetail);
