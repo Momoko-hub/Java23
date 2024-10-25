@@ -89,7 +89,7 @@ public class StudentController {
    * @return 実行結果
    */
   @Operation(summary = "受講生登録", description = "新規受講生の登録を行います。IDは自動生成され、クライアント側からは指定しません。")
-  @PostMapping("/registerStudent")
+  @PostMapping("/student")
   public ResponseEntity<StudentDetail> registerStudent(
       @RequestBody @Valid StudentDetail studentDetail) {
     StudentDetail responseStudentDetail = service.registerStudent(studentDetail);

@@ -77,7 +77,7 @@ class StudentControllerTest {
   void IDに紐づく受講生詳細が実行できて空のリストが返ってくること() throws Exception {
     int id = 12345;
 
-    mockMvc.perform(MockMvcRequestBuilders.get("/student/{id}", id))
+    mockMvc.perform(MockMvcRequestBuilders.get("/students/{id}", id))
         .andExpect(status().isOk());
 
     verify(service, times(1)).searchStudent(id);
@@ -113,7 +113,7 @@ class StudentControllerTest {
 
   @Test
   void 受講生詳細の登録が実行されているか() throws Exception {
-    mockMvc.perform(post("/registerStudent")
+    mockMvc.perform(post("/student")
             .contentType(MediaType.APPLICATION_JSON)
             .content("""
                         {
