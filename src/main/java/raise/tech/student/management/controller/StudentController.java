@@ -56,7 +56,7 @@ public class StudentController {
    * @return 受講生詳細
    */
   @Operation(summary = "IDによる受講生検索", description = "指定したIDの受講生詳細情報を取得します。")
-  @GetMapping("/student/{id}")
+  @GetMapping("/students/{id}")
   public StudentDetail getStudent(@PathVariable @NotNull Integer id) {
     return service.searchStudent(id);
   }
