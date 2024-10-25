@@ -141,48 +141,6 @@ public class StudentController {
   }
 
   /**
-   * 申込状況を本申込から受講中に変更します。
-   *
-   * @param id 申込状況ID
-   * @return 実行結果
-   */
-  @Operation(summary = "受講生更新", description = "申込状況を本申込から受講中に更新します")
-  @PutMapping("/updateStatus-toTakingTheCourse")
-  public ResponseEntity<String> updateStatusToTakingTheCourse(@RequestParam Integer id) {
-    List<ApplicationStatus> applicationStatus = service.findStatusById(id);
-    service.updateStatusToTakingTheCourse(applicationStatus);
-
-    String updatedStudentDetail = applicationStatus.stream()
-        .map(status -> "ID: " + status.getId() + ", 申込状況: " + status.getStatus() +
-            ", 更新日時: " + status.getUpdatedAt())
-        .collect(Collectors.joining("\n"));
-
-    return ResponseEntity.ok("申込状況が受講中に更新されました。\n" + updatedStudentDetail);
-
-  }
-
-  /**
-   * 申込状況を受講中から受講終了に変更します。
-   *
-   * @param id 申込状況ID
-   * @return 実行結果
-   */
-  @Operation(summary = "申込状況の更新", description = "申込状況を受講中から受講終了に更新します。")
-  @PutMapping("/updateStatus-toCourseCompleted")
-  public ResponseEntity<String> updateStatusToCourseCompleted(@RequestParam Integer id) {
-    List<ApplicationStatus> applicationStatus = service.findStatusById(id);
-    service.updateStatusToCourseCompleted(applicationStatus);
-
-    String updatedStudentDetail = applicationStatus.stream()
-        .map(status -> "ID: " + status.getId() + ", 申込状況: " + status.getStatus() +
-            ", 更新日時: " + status.getUpdatedAt())
-        .collect(Collectors.joining("\n"));
-
-    return ResponseEntity.ok("申込状況が受講終了に更新されました。\n" + updatedStudentDetail);
-
-  }
-
-  /**
    * 例外処理用
    */
   @Operation(summary = "例外処理", description = "例外処理を実行し、現在このAPIが使用できないことを通知します。")

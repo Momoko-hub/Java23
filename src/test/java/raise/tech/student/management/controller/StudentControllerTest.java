@@ -2,6 +2,7 @@ package raise.tech.student.management.controller;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -185,20 +186,29 @@ class StudentControllerTest {
   }
 
   @Test
-  void 申込状況が仮申込から本申込に変更されているか() throws Exception {
+  void 申込状況が適切に変更されているか() throws Exception {
     Integer testId = 123;
-    ApplicationStatus mockStatus = new ApplicationStatus();
-    mockStatus.setId(testId);
-    mockStatus.setStatus(Status.仮申込);
+    ApplicationStatus status1 = new ApplicationStatus();
+    status1.setId(testId);
+    status1.setStatus(Status.仮申込);
 
-    when(service.findStatusById(testId)).thenReturn(List.of(mockStatus));
+    List<ApplicationStatus> mockApplicationStatus = Arrays.asList(status1);
 
-    mockMvc.perform(put("/updateStatus-toMainApplication")
-            .param("id", String.valueOf(testId)))
+    when(service.findStatusById(testId)).thenReturn(mockApplicationStatus);
+    doAnswer(invocation -> {
+      List<ApplicationStatus> statuses = invocation.getArgument(0);
+      statuses.forEach(status -> status.setStatus(Status.本申込));
+      return null;
+    }).when(service).updateStatusToMainApplication(mockApplicationStatus);
+    
+    mockMvc.perform(put("/students/request-status")
+            .param("id", String.valueOf(testId))
+            .param("status", Status.仮申込.name()))
         .andExpect(MockMvcResultMatchers.status().isOk());
 
     verify(service, times(1)).findStatusById(testId);
-    verify(service, times(1)).updateStatusToMainApplication(List.of(mockStatus));
+    verify(service, times(1)).updateStatusToMainApplication(mockApplicationStatus);
+    assertThat(mockApplicationStatus.get(0).getStatus()).isEqualTo(Status.本申込);
 
   }
 
