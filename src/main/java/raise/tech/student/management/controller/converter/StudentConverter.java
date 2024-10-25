@@ -15,10 +15,11 @@ import raise.tech.student.management.domain.StudentDetail;
 public class StudentConverter {
 
   /**
-   * 受講生に紐づく受講生コース情報をマッピングする。 受講生コース情報は受講生に対して複数存在するのでループを回して受講生詳細情報を組み立てる。
+   * 学生リストを受け取り、それぞれの学生についてStudentDetailオブジェクトを生成し、そのリストを返します。
    *
-   * @param studentList       　受講生一覧
-   * @param studentCourseList 　受講生コース情報のリスト
+   * @param studentList           　受講生一覧
+   * @param studentCourseList     　受講生コース情報のリスト
+   * @param applicationStatusList 申込状況リスト
    * @return 受講生詳細情報のリスト
    */
   public List<StudentDetail> convertStudentDetails(List<Student> studentList,
@@ -30,6 +31,14 @@ public class StudentConverter {
 
   }
 
+  /**
+   * 特定の学生に対する詳細情報を生成し、StudentDetailオブジェクトを作成します。
+   *
+   * @param student               　受講生
+   * @param studentCourseList     　受講生コース情報のリスト
+   * @param applicationStatusList 申込状況リスト
+   * @return 受講生詳細情報
+   */
   private StudentDetail createStudentDetail(Student student, List<StudentCourse> studentCourseList,
       List<ApplicationStatus> applicationStatusList) {
 
@@ -47,6 +56,13 @@ public class StudentConverter {
     return studentDetail;
   }
 
+  /**
+   * 指定された学生に関するコースをフィルタリングして返します。
+   *
+   * @param student           受講生
+   * @param studentCourseList 　受講生コース情報のリスト
+   * @return 受講生コースリスト
+   */
   private List<StudentCourse> filterStudentCourses(Student student,
       List<StudentCourse> studentCourseList) {
 
@@ -55,6 +71,12 @@ public class StudentConverter {
         .collect(Collectors.toList());
   }
 
+  /**
+   * 学生に関するコースのステータスを設定します。
+   *
+   * @param courseForStudent      　受講生コース情報のリスト
+   * @param applicationStatusList 申込状況リスト
+   */
   private void setCourseStatus(List<StudentCourse> courseForStudent,
       List<ApplicationStatus> applicationStatusList) {
     courseForStudent.forEach(course ->
@@ -64,6 +86,13 @@ public class StudentConverter {
             .ifPresent(status -> course.setStatus(status.getStatus())));
   }
 
+  /**
+   * 学生に関連するコースに基づいて、申込状況のリストを取得します。
+   *
+   * @param courseForStudent      　受講生コース情報のリスト
+   * @param applicationStatusList 申込状況リスト
+   * @return 条件一致した申込状況のリスト
+   */
   private List<ApplicationStatus> getApplicationStatuss(List<StudentCourse> courseForStudent,
       List<ApplicationStatus> applicationStatusList) {
 
