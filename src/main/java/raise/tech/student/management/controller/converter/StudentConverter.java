@@ -39,7 +39,7 @@ public class StudentConverter {
    * @param applicationStatusList 申込状況リスト
    * @return 受講生詳細情報
    */
-  private StudentDetail createStudentDetail(Student student, List<StudentCourse> studentCourseList,
+  public StudentDetail createStudentDetail(Student student, List<StudentCourse> studentCourseList,
       List<ApplicationStatus> applicationStatusList) {
 
     StudentDetail studentDetail = new StudentDetail();
@@ -63,7 +63,7 @@ public class StudentConverter {
    * @param studentCourseList 　受講生コース情報のリスト
    * @return 受講生コースリスト
    */
-  private List<StudentCourse> filterStudentCourses(Student student,
+  public List<StudentCourse> filterStudentCourses(Student student,
       List<StudentCourse> studentCourseList) {
 
     return studentCourseList.stream()
@@ -77,7 +77,7 @@ public class StudentConverter {
    * @param courseForStudent      　受講生コース情報のリスト
    * @param applicationStatusList 申込状況リスト
    */
-  private void setCourseStatus(List<StudentCourse> courseForStudent,
+  public void setCourseStatus(List<StudentCourse> courseForStudent,
       List<ApplicationStatus> applicationStatusList) {
     courseForStudent.forEach(course ->
         applicationStatusList.stream()
@@ -93,7 +93,7 @@ public class StudentConverter {
    * @param applicationStatusList 申込状況リスト
    * @return 条件一致した申込状況のリスト
    */
-  private List<ApplicationStatus> getApplicationStatuss(List<StudentCourse> courseForStudent,
+  public List<ApplicationStatus> getApplicationStatuss(List<StudentCourse> courseForStudent,
       List<ApplicationStatus> applicationStatusList) {
 
     return applicationStatusList.stream()

@@ -15,14 +15,14 @@ import raise.tech.student.management.domain.StudentDetail;
 class StudentConverterTest {
 
   StudentConverter sut;
+  List<Student> studentList;
+  List<StudentCourse> studentCourseList;
+  List<ApplicationStatus> applicationStatusList;
 
   @BeforeEach
   void before() {
     sut = new StudentConverter();
-  }
 
-  @Test
-  void 受講生に紐づく受講生コース情報が取得できているか() {
     Student student1 = new Student();
     student1.setId(123);
     student1.setFullName("テスト太郎");
@@ -31,7 +31,7 @@ class StudentConverterTest {
     student2.setId(456);
     student2.setFullName("テスト花子");
 
-    List<Student> studentList = Arrays.asList(student1, student2);
+    studentList = Arrays.asList(student1, student2);
 
     StudentCourse studentCourse1 = new StudentCourse();
     studentCourse1.setId(111);
@@ -48,7 +48,7 @@ class StudentConverterTest {
     studentCourse3.setStudentsId(456);
     studentCourse3.setCourseName("Webデザイン");
 
-    List<StudentCourse> studentCourseList = Arrays.asList(studentCourse1, studentCourse2,
+    studentCourseList = Arrays.asList(studentCourse1, studentCourse2,
         studentCourse3);
 
     ApplicationStatus status1 = new ApplicationStatus();
@@ -63,29 +63,58 @@ class StudentConverterTest {
     status3.setCourseId(333);
     status3.setStatus(Status.仮申込);
 
-    List<ApplicationStatus> applicationStatusList = Arrays.asList(status1, status2, status3);
+    applicationStatusList = Arrays.asList(status1, status2, status3);
 
+  }
+
+  @Test
+  void converterStudentDetail_正しいStudentDetailリストが生成される() {
     List<StudentDetail> result = sut.convertStudentDetails(studentList, studentCourseList,
         applicationStatusList);
 
     assertEquals(2, result.size());
+    assertEquals("テスト太郎", result.get(0).getStudent().getFullName());
+    assertEquals("テスト花子", result.get(1).getStudent().getFullName());
+  }
 
-    StudentDetail studentDetail1 = result.getFirst();
-    assertEquals(123, studentDetail1.getStudent().getId());
-    assertEquals(2, studentDetail1.getStudentCourseList().size());
-    assertEquals("Java", studentDetail1.getStudentCourseList().get(0).getCourseName());
-    assertEquals("AWS", studentDetail1.getStudentCourseList().get(1).getCourseName());
-    assertEquals(2, studentDetail1.getApplicationStatus().size());
-    assertEquals(Status.仮申込, studentDetail1.getApplicationStatus().get(0).getStatus());
-    assertEquals(Status.仮申込, studentDetail1.getApplicationStatus().get(1).getStatus());
+  @Test
+  void createStudentDetail_正しいStudentDetailが生成される() {
+    StudentDetail result = sut.createStudentDetail(studentList.get(0), studentCourseList,
+        applicationStatusList);
 
-    StudentDetail studentDetail2 = result.get(1);
-    assertEquals(456, studentDetail2.getStudent().getId());
-    assertEquals(1, studentDetail2.getStudentCourseList().size());
-    assertEquals("Webデザイン", studentDetail2.getStudentCourseList().getFirst().getCourseName());
-    assertEquals(1, studentDetail2.getApplicationStatus().size());
-    assertEquals(Status.仮申込, studentDetail2.getApplicationStatus().get(0).getStatus());
+    assertEquals("テスト太郎", result.getStudent().getFullName());
+    assertEquals(2, result.getStudentCourseList().size());
+    assertEquals(Status.仮申込, result.getApplicationStatus().get(0).getStatus());
+  }
 
+  @Test
+  void filterStudentCourses_学生に関するコースのみ取得される() {
+    List<StudentCourse> result = sut.filterStudentCourses(studentList.get(0), studentCourseList);
 
+    assertEquals(2, result.size());
+    assertEquals("Java", result.get(0).getCourseName());
+    assertEquals("AWS", result.get(1).getCourseName());
+  }
+
+  @Test
+  void setCourseStatus_正しいステータスが設定される() {
+    List<StudentCourse> courseForStudent = sut.filterStudentCourses(studentList.get(0),
+        studentCourseList);
+    sut.setCourseStatus(courseForStudent, applicationStatusList);
+
+    assertEquals(Status.仮申込, courseForStudent.get(0).getStatus());
+    assertEquals(Status.仮申込, courseForStudent.get(1).getStatus());
+  }
+
+  @Test
+  void getApplicationStatus_学生に関する申込状況が取得される() {
+    List<StudentCourse> courseForStudent = sut.filterStudentCourses(studentList.get(0),
+        studentCourseList);
+    List<ApplicationStatus> result = sut.getApplicationStatuss(courseForStudent,
+        applicationStatusList);
+
+    assertEquals(2, result.size());
+    assertEquals(Status.仮申込, result.get(0).getStatus());
+    assertEquals(Status.仮申込, result.get(1).getStatus());
   }
 }
