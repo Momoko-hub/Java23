@@ -103,7 +103,7 @@ public class StudentController {
    * @return 実行結果
    */
   @Operation(summary = "受講生更新", description = "受講生詳細の更新を行います。キャンセルフラグの更新もここで行います。（論理削除）")
-  @PutMapping("/updateStudent")
+  @PutMapping("/students")
   public ResponseEntity<String> updateStudent(@RequestBody StudentDetail studentDetail) {
     service.updateStudent(studentDetail);
     return ResponseEntity.ok("更新処理が成功しました。");
