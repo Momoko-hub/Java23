@@ -144,7 +144,7 @@ public class StudentController {
    * 例外処理用
    */
   @Operation(summary = "例外処理", description = "例外処理を実行し、現在このAPIが使用できないことを通知します。")
-  @GetMapping("/DescriptionStudents")
+  @GetMapping("/students/descriptions")
   public List<StudentDetail> getStudentDetail() throws TestException {
     throw new TestException(
         "現在このAPIは使用できません。URLは「students』ではなく「studentsList」を利用してください。");
