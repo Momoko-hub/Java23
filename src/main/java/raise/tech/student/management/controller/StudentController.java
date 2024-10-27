@@ -38,11 +38,11 @@ public class StudentController {
   }
 
   /**
-   * 受講生詳細の一覧検索です。 全件検索を行うので、条件指定は行わないものになります。 論理削除された受講生は表示されません。 デフォルトでは論理削除されたデータは含みません。
+   * 受講生詳細の一覧検索です。 全件検索を行うので、条件指定は行わないものになります。デフォルトでは論理削除されたデータは含みません。
    *
    * @return 受講生詳細一覧（全件）
    */
-  @Operation(summary = "一覧検索（論理削除除く）", description = "すべての受講生の詳細情報を取得します。論理削除された受講生は表示されません。")
+  @Operation(summary = "一覧検索（論理削除除く）", description = "すべての受講生の詳細情報を取得します。デフォルトでは論理削除されたデータは含みません。")
   @GetMapping("/students")
   public List<StudentDetail> getStudentsList(
       @RequestParam(required = false, defaultValue = "false") boolean includeDeleted) {
@@ -67,7 +67,7 @@ public class StudentController {
    * @param fullName 　受講生の名前
    * @return 受講生詳細
    */
-  @Operation(summary = "名前による受講生検索", description = "検索した名前の受講生詳細情報を取得します。")
+  @Operation(summary = "名前による受講生検索", description = "検索した条件の受講生詳細情報を取得します。")
   @GetMapping("/students/search")
   public List<StudentDetail> searchStudents(
       @RequestParam(required = false) String fullName,
@@ -115,7 +115,7 @@ public class StudentController {
    * @param id 申込状況ID
    * @return 実行結果
    */
-  @Operation(summary = "受講生更新", description = "申込状況を仮申込から本申込に更新します")
+  @Operation(summary = "受講生更新", description = "申込状況を更新します")
   @PutMapping("/students/request-status")
   public ResponseEntity<String> updateStatus(@RequestParam Integer id,
       @RequestParam Status status) {
