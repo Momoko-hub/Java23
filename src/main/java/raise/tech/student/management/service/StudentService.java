@@ -232,7 +232,7 @@ public class StudentService {
    */
   public List<StudentDetail> searchStudentByStatus(Status status) {
 
-    List<ApplicationStatus> applicationStatuses = repository.searchApplicationStatusByStatus(
+    List<ApplicationStatus> applicationStatuses = repository.findApplicationStatusByConditions(
         status);
 
     return applicationStatuses.stream()

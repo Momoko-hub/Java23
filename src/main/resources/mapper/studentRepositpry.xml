@@ -77,55 +77,46 @@
     WHERE course_id = #{courseId}
   </select>
 
-  <!-- 受講生の名前検索 -->
-  <select id="searchStudentByName" resultType="raise.tech.student.management.data.Student">
-    SELECT *
-    FROM students
-    WHERE full_name LIKE CONCAT('%', #{fullName}, '%')
+
+  <!-- 受講生の条件検索 -->
+  <select id="findStudentsByConditions" resultType="raise.tech.student.management.data.Student">
+    SELECT * FROM students
+    WHERE 1=1
+    <if test="fullName != null and fullName != ''">
+      AND full_name LIKE CONCAT('%', #{fullName}, '%')
+    </if>
+    <if test="furigana != null and furigana != ''">
+      AND furigana LIKE CONCAT('%', #{furigana}, '%')
+    </if>
+    <if test="address != null and address != ''">
+      AND address LIKE CONCAT('%', #{address}, '%')
+    </if>
+    <if test="age != null">
+      AND age = #{age}
+    </if>
+    <if test="sex != null and sex != ''">
+      AND sex = #{sex}
+    </if>
   </select>
 
-  <!-- 受講生のフリガナ検索 -->
-  <select id="searchStudentByFurigana" resultType="raise.tech.student.management.data.Student">
-    SELECT *
-    FROM students
-    WHERE furigana LIKE CONCAT('%', #{furigana}, '%')
-  </select>
-
-  <!-- 受講生の地域検索 -->
-  <select id="searchStudentByAddress" resultType="raise.tech.student.management.data.Student">
-    SELECT *
-    FROM students
-    WHERE address LIKE CONCAT('%', #{address}, '%')
-  </select>
-
-  <!-- 受講生の年齢検索 -->
-  <select id="searchStudentByAge" resultType="raise.tech.student.management.data.Student">
-    SELECT *
-    FROM students
-    WHERE age = #{age}
-  </select>
-
-  <!-- 受講生の性別検索 -->
-  <select id="searchStudentBySex" resultType="raise.tech.student.management.data.Student">
-    SELECT *
-    FROM students
-    WHERE sex = #{sex}
-  </select>
-
-  <!-- 受講コースの名前検索 -->
-  <select id="searchStudentCourseByCourseName"
+  <!-- 受講生コースの条件検索 -->
+  <select id="findCoursesByConditions"
     resultType="raise.tech.student.management.data.StudentCourse">
-    SELECT *
-    FROM students_courses
-    WHERE course_name = #{courseName}
+    SELECT * FROM students_courses
+    WHERE 1=1
+    <if test="courseName != null and courseName != ''">
+      AND course_name = #{courseName}
+    </if>
   </select>
 
-  <!-- 申込状況での検索 -->
-  <select id="searchApplicationStatusByStatus"
+  <!-- 申込状況の条件検索 -->
+  <select id="findApplicationStatusByConditions"
     resultType="raise.tech.student.management.data.ApplicationStatus">
-    SELECT *
-    FROM application_status
-    WHERE status = #{status}
+    SELECT * FROM application_status
+    WHERE 1=1
+    <if test="status != null">
+      AND status = #{status}
+    </if>
   </select>
 
   <!-- 受講生の新規登録（IDは自動採番） -->
@@ -180,47 +171,6 @@
     SET status = #{status}
     WHERE id = #{id}
   </update>
-
-  <!-- 受講生の条件検索 -->
-  <select id="findStudentsByConditions" resultType="raise.tech.student.management.data.Student">
-    SELECT * FROM students
-    WHERE 1=1
-    <if test="fullName != null and fullName != ''">
-      AND full_name LIKE CONCAT('%', #{fullName}, '%')
-    </if>
-    <if test="furigana != null and furigana != ''">
-      AND furigana LIKE CONCAT('%', #{furigana}, '%')
-    </if>
-    <if test="address != null and address != ''">
-      AND address LIKE CONCAT('%', #{address}, '%')
-    </if>
-    <if test="age != null">
-      AND age = #{age}
-    </if>
-    <if test="sex != null and sex != ''">
-      AND sex = #{sex}
-    </if>
-  </select>
-
-  <!-- 受講生コースの条件検索 -->
-  <select id="findCoursesByConditions"
-    resultType="raise.tech.student.management.data.StudentCourse">
-    SELECT * FROM students_courses
-    WHERE 1=1
-    <if test="courseName != null and courseName != ''">
-      AND course_name = #{courseName}
-    </if>
-  </select>
-
-  <!-- 申込状況の条件検索 -->
-  <select id="findApplicationStatusByConditions"
-    resultType="raise.tech.student.management.data.ApplicationStatus">
-    SELECT * FROM application_status
-    WHERE 1=1
-    <if test="status != null">
-      AND status = #{status}
-    </if>
-  </select>
 
 
 </mapper>

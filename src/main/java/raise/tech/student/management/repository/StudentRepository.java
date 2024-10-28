@@ -76,7 +76,7 @@ public interface StudentRepository {
   List<StudentCourse> searchStudentCourseById(Integer id);
 
   /**
-   * 申込状況のIDを検索します。
+   * 申込状況のIDで検索します。
    *
    * @param id 　申込状況のID
    */
@@ -91,60 +91,34 @@ public interface StudentRepository {
   List<ApplicationStatus> searchApplicationStatusByCourseId(Integer courseId);
 
   /**
-   * 受講生の検索を行います。
+   * 条件に該当する受講生の検索を行います。 検索条件（名前、フリガナ、居住地域、年齢、性別）
    *
-   * @param fullName 学生の名前
-   * @return 学生情報
+   * @param fullName,furigana,address,age,sex
+   * @return 該当する受講生リスト
    */
-  List<Student> searchStudentByName(String fullName);
+  List<Student> findStudentsByConditions(
+      @Param("fullName") String fullName,
+      @Param("furigana") String furigana,
+      @Param("address") String address,
+      @Param("age") Integer age,
+      @Param("sex") String sex);
 
   /**
-   * 受講生の検索を行います。
+   * コース名が一致する受講生コースの検索を行います。
    *
-   * @param furigana 学生のフリガナ
-   * @return 学生情報
+   * @param courseName
+   * @return 該当する受講生コースのリスト
    */
-  List<Student> searchStudentByFurigana(String furigana);
+  List<StudentCourse> findCoursesByConditions(@Param("courseName") String courseName);
 
   /**
-   * 受講生の検索を行います。
+   * ステータスが一致する申込状況の検索を行います。
    *
-   * @param address 学生の居住地域
-   * @return 学生情報
+   * @param status
+   * @return 該当する申込状況のリスト
    */
-  List<Student> searchStudentByAddress(String address);
+  List<ApplicationStatus> findApplicationStatusByConditions(@Param("status") Status status);
 
-  /**
-   * 受講生の検索を行います。
-   *
-   * @param age 学生の年齢
-   * @return 学生情報
-   */
-  List<Student> searchStudentByAge(Integer age);
-
-  /**
-   * 受講生の検索を行います。
-   *
-   * @param sex 学生の性別
-   * @return 学生情報
-   */
-  List<Student> searchStudentBySex(String sex);
-
-  /**
-   * 受講生の検索を行います。
-   *
-   * @param courseName 受講コース名
-   * @return 学生情報
-   */
-  List<StudentCourse> searchStudentCourseByCourseName(String courseName);
-
-  /**
-   * 申込状況の検索を行います。
-   *
-   * @param status 　申込状況
-   * @return 受講生コースIDに紐づく申込状況
-   */
-  List<ApplicationStatus> searchApplicationStatusByStatus(Status status);
 
   /**
    * 受講生を新規登録します。IDに関しては自動採番を行う。
@@ -188,15 +162,4 @@ public interface StudentRepository {
    */
   void updateStatus(ApplicationStatus applicationStatus);
 
-
-  List<Student> findStudentsByConditions(
-      @Param("fullName") String fullName,
-      @Param("furigana") String furigana,
-      @Param("address") String address,
-      @Param("age") Integer age,
-      @Param("sex") String sex);
-
-  List<StudentCourse> findCoursesByConditions(@Param("courseName") String courseName);
-
-  List<ApplicationStatus> findApplicationStatusByConditions(@Param("status") Status status);
 }

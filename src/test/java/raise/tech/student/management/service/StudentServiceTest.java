@@ -382,7 +382,7 @@ class StudentServiceTest {
     course2.setStudentsId(12345);
     course2.setCourseName("AWS");
 
-    when(repository.searchApplicationStatusByStatus(status))
+    when(repository.findApplicationStatusByConditions(status))
         .thenReturn(applicationStatus);
     when(repository.searchStudentCourseById(111)).thenReturn(Arrays.asList(course1));
     when(repository.searchStudentCourseById(222)).thenReturn(Arrays.asList(course2));
