@@ -114,7 +114,7 @@ class StudentControllerTest {
 
   @Test
   void 受講生詳細の登録が実行されているか() throws Exception {
-    mockMvc.perform(post("/student")
+    mockMvc.perform(post("/students")
             .contentType(MediaType.APPLICATION_JSON)
             .content("""
                         {
@@ -146,7 +146,7 @@ class StudentControllerTest {
 
   @Test
   void 受講生詳細の変更が実行されているか() throws Exception {
-    mockMvc.perform(put("/updateStudent")
+    mockMvc.perform(put("/students")
             .contentType(MediaType.APPLICATION_JSON)
             .content("""
                 {
@@ -199,15 +199,15 @@ class StudentControllerTest {
       List<ApplicationStatus> statuses = invocation.getArgument(0);
       statuses.forEach(status -> status.setStatus(Status.本申込));
       return null;
-    }).when(service).updateStatusToMainApplication(mockApplicationStatus);
-    
+    }).when(service).updateApplicationStatus(mockApplicationStatus, Status.本申込);
+
     mockMvc.perform(put("/students/request-status")
             .param("id", String.valueOf(testId))
             .param("status", Status.仮申込.name()))
         .andExpect(MockMvcResultMatchers.status().isOk());
 
     verify(service, times(1)).findStatusById(testId);
-    verify(service, times(1)).updateStatusToMainApplication(mockApplicationStatus);
+    verify(service, times(1)).updateApplicationStatus(mockApplicationStatus, Status.本申込);
     assertThat(mockApplicationStatus.get(0).getStatus()).isEqualTo(Status.本申込);
 
   }

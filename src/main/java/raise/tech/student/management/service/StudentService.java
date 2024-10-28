@@ -188,10 +188,9 @@ public class StudentService {
    *
    * @param applicationStatus（本申込）
    */
-  public void updateStatusToMainApplication(List<ApplicationStatus> applicationStatus) {
+  public void updateApplicationStatus(List<ApplicationStatus> applicationStatus, Status newStatus) {
     for (ApplicationStatus status : applicationStatus) {
-      status.setStatus(Status.本申込);
-
+      status.setStatus(newStatus);
       status.setUpdatedAt(LocalDateTime.now());
       repository.updateStatus(status);
     }

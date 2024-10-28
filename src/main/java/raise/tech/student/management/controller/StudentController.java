@@ -121,17 +121,17 @@ public class StudentController {
       @RequestParam Status status) {
     List<ApplicationStatus> applicationStatus = service.findStatusById(id);
 
+    Status newStatus;
     switch (status) {
-      case Status.仮申込 -> service.updateStatusToMainApplication(applicationStatus);
-
-      case Status.本申込 -> service.updateStatusToTakingTheCourse(applicationStatus);
-
-      case Status.受講中 -> service.updateStatusToCourseCompleted(applicationStatus);
-
+      case Status.仮申込 -> newStatus = Status.本申込;
+      case Status.本申込 -> newStatus = Status.受講中;
+      case Status.受講中 -> newStatus = Status.受講終了;
       default -> {
         return ResponseEntity.badRequest().body("ステータスが更新できませんでした：" + status);
       }
     }
+    service.updateApplicationStatus(applicationStatus, newStatus);
+
     String updatedStudentDetail = applicationStatus.stream()
         .map(as -> "ID:" + as.getId() + ", 申込状況:" + as.getStatus()
             + ", 更新日時:" + as.getUpdatedAt())

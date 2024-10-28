@@ -355,35 +355,14 @@ class StudentServiceTest {
 
     studentCourseList.forEach(course ->
         verify(repository, times(1)).updateStudentCourse(course));
-
   }
 
   @Test
-  void 申込状況が仮申込から本申込に更新できているか() {
-    sut.updateStatusToMainApplication(applicationStatus);
+  void 申込状況が更新できているか() {
+    sut.updateApplicationStatus(applicationStatus, Status.仮申込);
     verify(repository, times(1)).updateStatus(applicationStatus.get(0));
 
     assertEquals(Status.本申込, applicationStatus.get(0).getStatus());
-
-    assertNotNull(applicationStatus.get(0).getUpdatedAt());
-  }
-
-  @Test
-  void 申込状況が本申込から受講中に更新できているか() {
-    sut.updateStatusToTakingTheCourse(applicationStatus);
-    verify(repository, times(1)).updateStatus(applicationStatus.get(0));
-
-    assertEquals(Status.受講中, applicationStatus.get(0).getStatus());
-
-    assertNotNull(applicationStatus.get(0).getUpdatedAt());
-  }
-
-  @Test
-  void 申込状況が受講中から受講終了に更新できているか() {
-    sut.updateStatusToCourseCompleted(applicationStatus);
-    verify(repository, times(1)).updateStatus(applicationStatus.get(0));
-
-    assertEquals(Status.受講終了, applicationStatus.get(0).getStatus());
 
     assertNotNull(applicationStatus.get(0).getUpdatedAt());
   }
