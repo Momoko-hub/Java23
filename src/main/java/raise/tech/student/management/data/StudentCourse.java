@@ -5,6 +5,7 @@ import jakarta.validation.constraints.NotBlank;
 import java.time.LocalDateTime;
 import lombok.Getter;
 import lombok.Setter;
+import raise.tech.student.management.domain.Status;
 
 @Schema(description = "受講生コース情報")
 @Getter
@@ -19,6 +20,8 @@ public class StudentCourse {
 
   @NotBlank
   private String courseName;
+
+  private Status status;
 
   private LocalDateTime startDate;
 

@@ -3,14 +3,29 @@
   "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="raise.tech.student.management.repository.StudentRepository">
 
-  <!-- 受講生の全件検索 -->
-  <select id="searchStudents" resultType="raise.tech.student.management.data.Student">
+  <!-- 受講生の全件検索(論理削除含む) -->
+  <select id="searchAllStudents" resultType="raise.tech.student.management.data.Student">
     SELECT *
     FROM students
   </select>
 
-  <!-- 受講生の検索 -->
-  <select id="searchStudent" resultType="raise.tech.student.management.data.Student">
+  <!-- 受講生の全件検索 -->
+  <select id="searchStudents" resultType="raise.tech.student.management.data.Student">
+    SELECT *
+    FROM students
+    WHERE is_deleted = false
+  </select>
+
+  <!-- 受講生のID検索 -->
+  <select id="searchStudentById" resultType="raise.tech.student.management.data.Student">
+    SELECT *
+    FROM students
+    WHERE id = #{id}
+  </select>
+
+  <!-- 受講生コースIDに紐づく受講生の検索 -->
+  <select id="searchStudentsById"
+    resultType="raise.tech.student.management.data.Student">
     SELECT *
     FROM students
     WHERE id = #{id}
@@ -23,11 +38,85 @@
     FROM students_courses
   </select>
 
+  <!-- 申込状況の全件検索 -->
+  <select id="searchApplicationStatuses"
+    resultType="raise.tech.student.management.data.ApplicationStatus">
+    SELECT *
+    FROM application_status
+  </select>
+
   <!-- 受講生IDに紐づく受講生コース情報の検索 -->
-  <select id="searchStudentCourse" resultType="raise.tech.student.management.data.StudentCourse">
+  <select id="searchStudentCourseByStudentId"
+    resultType="raise.tech.student.management.data.StudentCourse">
     SELECT *
     FROM students_courses
     WHERE students_id = #{studentsId}
+  </select>
+
+  <!-- 受講生IDに紐づく受講生コース情報の検索 -->
+  <select id="searchStudentCourseById"
+    resultType="raise.tech.student.management.data.StudentCourse">
+    SELECT *
+    FROM students_courses
+    WHERE id = #{id}
+  </select>
+
+  <!-- 受講生コースIDに紐づく申込状況の検索 -->
+  <select id="searchApplicationStatusById"
+    resultType="raise.tech.student.management.data.ApplicationStatus">
+    SELECT *
+    FROM application_status
+    WHERE id = #{id}
+  </select>
+
+  <!-- 受講生コースIDに紐づく申込状況の検索 -->
+  <select id="searchApplicationStatusByCourseId"
+    resultType="raise.tech.student.management.data.ApplicationStatus">
+    SELECT *
+    FROM application_status
+    WHERE course_id = #{courseId}
+  </select>
+
+
+  <!-- 受講生の条件検索 -->
+  <select id="findStudentsByConditions" resultType="raise.tech.student.management.data.Student">
+    SELECT * FROM students
+    WHERE 1=1
+    <if test="fullName != null and fullName != ''">
+      AND full_name LIKE CONCAT('%', #{fullName}, '%')
+    </if>
+    <if test="furigana != null and furigana != ''">
+      AND furigana LIKE CONCAT('%', #{furigana}, '%')
+    </if>
+    <if test="address != null and address != ''">
+      AND address LIKE CONCAT('%', #{address}, '%')
+    </if>
+    <if test="age != null">
+      AND age = #{age}
+    </if>
+    <if test="sex != null and sex != ''">
+      AND sex = #{sex}
+    </if>
+  </select>
+
+  <!-- 受講生コースの条件検索 -->
+  <select id="findCoursesByConditions"
+    resultType="raise.tech.student.management.data.StudentCourse">
+    SELECT * FROM students_courses
+    WHERE 1=1
+    <if test="courseName != null and courseName != ''">
+      AND course_name = #{courseName}
+    </if>
+  </select>
+
+  <!-- 申込状況の条件検索 -->
+  <select id="findApplicationStatusByConditions"
+    resultType="raise.tech.student.management.data.ApplicationStatus">
+    SELECT * FROM application_status
+    WHERE 1=1
+    <if test="status != null">
+      AND status = #{status}
+    </if>
   </select>
 
   <!-- 受講生の新規登録（IDは自動採番） -->
@@ -44,6 +133,14 @@
     useGeneratedKeys="true" keyProperty="id">
     INSERT INTO students_courses (students_id, course_name, start_date, end_date)
     VALUES (#{studentsId}, #{courseName}, #{startDate}, #{endDate})
+  </insert>
+
+  <!-- 申込状況の新規登録（IDは自動採番） -->
+  <insert id="insertApplicationStatus"
+    parameterType="raise.tech.student.management.data.ApplicationStatus"
+    useGeneratedKeys="true" keyProperty="id">
+    INSERT INTO application_status (course_id, status, created_at, updated_at)
+    VALUES (#{courseId}, #{status}, #{createdAt}, #{updatedAt})
   </insert>
 
   <!-- 受講生の更新 -->
@@ -65,6 +162,13 @@
   <update id="updateStudentCourse" parameterType="raise.tech.student.management.data.StudentCourse">
     UPDATE students_courses
     SET course_name = #{courseName}
+    WHERE id = #{id}
+  </update>
+
+  <!-- 申込状況の更新 -->
+  <update id="updateStatus" parameterType="raise.tech.student.management.data.ApplicationStatus">
+    UPDATE application_status
+    SET status = #{status}
     WHERE id = #{id}
   </update>
 
