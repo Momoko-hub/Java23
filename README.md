@@ -29,6 +29,10 @@
 ### ER図
 <img width="572" alt="スクリーンショット 2024-10-21 13 42 42" src="https://github.com/user-attachments/assets/36b70136-fe4a-499e-95c0-18bbbe18b2a5">
 
+### DBのテーブル設計
+<img width="1092" alt="スクリーンショット 2024-11-05 6 13 20" src="https://github.com/user-attachments/assets/2dbe4351-0f98-4487-94d3-98547b9b7bc5">
+
+
 ### URL設計書
 <img width="886" alt="スクリーンショット 2024-11-04 16 58 20" src="https://github.com/user-attachments/assets/a0ef1e1c-6b6c-4929-820a-8189a0df5d45">
 
