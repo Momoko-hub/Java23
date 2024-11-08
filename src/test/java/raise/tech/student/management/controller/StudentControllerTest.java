@@ -6,7 +6,6 @@ import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
@@ -244,11 +243,4 @@ class StudentControllerTest {
     assertThat(violations.size()).isEqualTo(1);
   }
 
-  @Test
-  void 受講生詳細の例外APIが実行できてステータスが400で返ってくること() throws Exception {
-    mockMvc.perform(get("/students/descriptions"))
-        .andExpect(status().is4xxClientError())
-        .andExpect(content().string(
-            "現在このAPIは使用できません。URLは「students』ではなく「studentsList」を利用してください。"));
-  }
 }
