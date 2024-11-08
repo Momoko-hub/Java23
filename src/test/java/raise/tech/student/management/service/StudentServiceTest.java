@@ -359,7 +359,8 @@ class StudentServiceTest {
 
   @Test
   void 申込状況が更新できているか() {
-    sut.updateApplicationStatus(applicationStatus, Status.仮申込);
+    applicationStatus.get(0).setStatus(Status.仮申込);
+    sut.updateApplicationStatus(applicationStatus, Status.本申込);
     verify(repository, times(1)).updateStatus(applicationStatus.get(0));
 
     assertEquals(Status.本申込, applicationStatus.get(0).getStatus());

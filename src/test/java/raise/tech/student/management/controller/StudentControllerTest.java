@@ -246,7 +246,7 @@ class StudentControllerTest {
 
   @Test
   void 受講生詳細の例外APIが実行できてステータスが400で返ってくること() throws Exception {
-    mockMvc.perform(get("/DescriptionStudents"))
+    mockMvc.perform(get("/students/descriptions"))
         .andExpect(status().is4xxClientError())
         .andExpect(content().string(
             "現在このAPIは使用できません。URLは「students』ではなく「studentsList」を利用してください。"));

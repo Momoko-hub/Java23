@@ -184,9 +184,9 @@ public class StudentService {
   }
 
   /**
-   * 申込状況の更新です。仮申込から本申込に更新します。
+   * 申込状況の更新です。
    *
-   * @param applicationStatus（本申込）
+   * @param applicationStatus
    */
   public void updateApplicationStatus(List<ApplicationStatus> applicationStatus, Status newStatus) {
     for (ApplicationStatus status : applicationStatus) {
@@ -196,33 +196,6 @@ public class StudentService {
     }
   }
 
-  /**
-   * 申込状況の更新です。本申込から受講中に更新します。
-   *
-   * @param applicationStatus（受講中）
-   */
-  public void updateStatusToTakingTheCourse(List<ApplicationStatus> applicationStatus) {
-    for (ApplicationStatus status : applicationStatus) {
-      status.setStatus(Status.受講中);
-
-      status.setUpdatedAt(LocalDateTime.now());
-      repository.updateStatus(status);
-    }
-  }
-
-  /**
-   * 申込状況の更新です。受講中から受講終了に更新します。
-   *
-   * @param applicationStatus（受講終了）
-   */
-  public void updateStatusToCourseCompleted(List<ApplicationStatus> applicationStatus) {
-    for (ApplicationStatus status : applicationStatus) {
-      status.setStatus(Status.受講終了);
-
-      status.setUpdatedAt(LocalDateTime.now());
-      repository.updateStatus(status);
-    }
-  }
 
   /**
    * 申込状況の検索です。検索した申込状況に該当する受講生情報を表示します。 コースが複数ある場合は該当するコースのみ表示されます。
